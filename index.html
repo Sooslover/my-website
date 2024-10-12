@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -16,10 +16,12 @@
             background: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);
             color: #333;
         }
+        h1, h3 {
+            color: #2c3e50;
+        }
         h1 {
             margin-bottom: 20px;
             font-size: 2.5rem;
-            color: #2c3e50;
         }
         button {
             padding: 10px 20px;
@@ -99,21 +101,11 @@
             animation: fadeInOut 2s forwards;
         }
         @keyframes fadeInOut {
-            0% {
-                opacity: 0;
-            }
-            10% {
-                opacity: 1;
-            }
-            90% {
-                opacity: 1;
-            }
-            100% {
-                opacity: 0;
-            }
+            0% { opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; }
         }
-    </style>
-    <style>
         #dark-mode-btn, #light-mode-btn {
             position: fixed;
             top: 10px;
@@ -136,7 +128,7 @@
 <body>
     <button id="dark-mode-btn">Dark Mode</button>
     <button id="light-mode-btn">Light Mode</button>
-    <h1>Speech to Text Converter</h1>
+    <h1 id="main-heading">Speech to Text Converter</h1>
     
     <button id="start-btn">Start Recording</button>
     <button id="stop-btn">Stop Recording</button>
@@ -162,7 +154,9 @@
         const statusIndicator = document.getElementById('status-indicator');
         const wordCountDisplay = document.getElementById('word-count');
         const historyList = document.getElementById('history-list');
-        
+        const darkModeBtn = document.getElementById('dark-mode-btn');
+        const lightModeBtn = document.getElementById('light-mode-btn');
+        const mainHeading = document.getElementById('main-heading');
 
         let timerInterval;
         let startTime;
@@ -197,10 +191,9 @@
             recognition.lang = 'en-US';
 
             recognition.onstart = function() {
-                console.log('Voice recognition started.');
                 statusIndicator.classList.add('active');
                 if (!isPaused) {
-                    speechBuffer = output.textContent; // Preserve existing text when resuming
+                    speechBuffer = output.textContent;
                 }
                 startTimer();
             };
@@ -222,19 +215,16 @@
             };
 
             recognition.onend = function() {
-                console.log('Voice recognition ended.');
                 if (!stopBtn.disabled && !isPaused) {
                     recognition.start();
                 } else {
                     stopTimer();
                     const text = output.innerText;
                     navigator.clipboard.writeText(text).then(() => {
-                        console.log('Text copied to clipboard');
                         const popup = document.createElement('div');
                         popup.classList.add('popup');
                         popup.textContent = 'Text copied to clipboard!';
                         document.body.appendChild(popup);
-
                         setTimeout(() => {
                             document.body.removeChild(popup);
                         }, 2000);
@@ -299,26 +289,34 @@
             link.download = 'transcription.txt';
             link.click();
         });
-        const darkModeBtn = document.getElementById('dark-mode-btn');
-    const lightModeBtn = document.getElementById('light-mode-btn');
 
-    darkModeBtn.addEventListener('click', () => {
-        document.body.style.background = '#2c3e50';
-        document.body.style.color = '#ecf0f1';
-        output.style.background = '#34495e';
-        output.style.color = '#ecf0f1';
-        timerDisplay.style.background = '#2c3e50';
-        timerDisplay.style.color = '#ecf0f1';
-    });
+        darkModeBtn.addEventListener('click', () => {
+            document.body.style.background = '#2c3e50';
+            document.body.style.color = '#ecf0f1';
+            output.style.background = '#34495e';
+            output.style.color = '#ecf0f1';
+            timerDisplay.style.background = '#2c3e50';
+            timerDisplay.style.color = '#ecf0f1';
+            mainHeading.style.color = '#ecf0f1';
+            const headings = document.querySelectorAll('h3');
+            headings.forEach(heading => {
+                heading.style.color = '#ecf0f1';
+            });
+        });
 
-    lightModeBtn.addEventListener('click', () => {
-        document.body.style.background = 'linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%)';
-        document.body.style.color = '#333';
-        output.style.background = 'white';
-        output.style.color = '#333';
-        timerDisplay.style.background = '#ecf0f1';
-        timerDisplay.style.color = '#333';
-    });
-</script>
+        lightModeBtn.addEventListener('click', () => {
+            document.body.style.background = 'linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%)';
+            document.body.style.color = '#333';
+            output.style.background = 'white';
+            output.style.color = '#333';
+            timerDisplay.style.background = '#ecf0f1';
+            timerDisplay.style.color = '#333';
+            mainHeading.style.color = '#2c3e50';
+            const headings = document.querySelectorAll('h3');
+            headings.forEach(heading => {
+                heading.style.color = '#2c3e50';
+            });
+        });
+    </script>
 </body>
 </html>
