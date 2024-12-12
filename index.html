@@ -1,57 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Speech to Text</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/> 
+    <title>Enhanced Speech to Text Converter</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            height: 100vh;
+            justify-content: start;
+            height: 100%;
             margin: 0;
+            padding: 20px;
             background: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);
             color: #333;
+            transition: background-color 0.3s, color 0.3s;
         }
         h1, h3 {
             color: #2c3e50;
+            margin-bottom: 10px;
         }
         h1 {
-            margin-bottom: 20px;
+            margin-top: 20px;
             font-size: 2.5rem;
         }
-        button {
+        button, select, input[type="checkbox"] {
             padding: 10px 20px;
-            margin: 5px;
+            margin: 5px 5px 5px 0;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             font-size: 1rem;
             transition: background-color 0.3s;
         }
-        #start-btn {
-            background-color: #2ecc71;
+        button {
+            background-color: #3498db;
             color: white;
         }
-        #start-btn:hover {
-            background-color: #27ae60;
+        button:hover {
+            background-color: #2980b9;
         }
-        #stop-btn {
-            background-color: #e74c3c;
+        #toggle-theme-btn {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background-color: #555;
             color: white;
-        }
-        #stop-btn:hover {
-            background-color: #c0392b;
-        }
-        #pause-resume-btn {
-            background-color: #f1c40f;
-            color: white;
-        }
-        #pause-resume-btn:hover {
-            background-color: #f39c12;
+            padding: 10px;
+            border-radius: 5px;
         }
         #output {
             width: 80%;
@@ -64,6 +62,7 @@
             background: white;
             border-radius: 5px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s, color 0.3s;
         }
         #timer {
             font-size: 1.2rem;
@@ -71,6 +70,7 @@
             background: #ecf0f1;
             padding: 10px;
             border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
         }
         #status-indicator {
             display: none;
@@ -106,41 +106,153 @@
             90% { opacity: 1; }
             100% { opacity: 0; }
         }
-        #dark-mode-btn, #light-mode-btn {
-            position: fixed;
-            top: 10px;
-            left: 10px;
-            margin-right: 10px;
-            background-color: #555;
-            color: white;
-            border: none;
+        #word-count, #history, #settings-panel {
+            margin-top: 20px;
+            width: 80%;
+        }
+        #history {
+            margin-bottom: 30px;
+        }
+        #history-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        #history-list li {
+            margin-bottom: 10px;
+            background: #fff;
             padding: 10px;
             border-radius: 5px;
-            cursor: pointer;
+            position: relative;
         }
-        #light-mode-btn {
-            left: 130px;
-            background-color: #ddd;
-            color: #333;
+        #history-list li button {
+            margin: 5px;
         }
+        #history-search {
+            margin-bottom: 10px;
+            width: 50%;
+            padding: 5px;
+        }
+        #settings-panel {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background: #f7f7f7;
+        }
+        #settings-panel h3 {
+            margin-top: 0;
+        }
+        #settings-panel label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        #settings-panel select, #settings-panel input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
+        /* Dark Mode Styles */
+        .dark-mode {
+            background: #2c3e50;
+            color: #ecf0f1;
+        }
+
+        .dark-mode h1, 
+        .dark-mode h3, 
+        .dark-mode p, 
+        .dark-mode label,
+        .dark-mode #word-count,
+        .dark-mode #status-indicator {
+            color: #ecf0f1;
+        }
+
+        .dark-mode #output {
+            background: #34495e;
+            color: #ecf0f1;
+            border: 1px solid #2c3e50;
+        }
+
+        .dark-mode #timer {
+            background: #34495e;
+            color: #ecf0f1;
+            border: none;
+        }
+
+        .dark-mode button {
+            background-color: #2980b9;
+            color: #ecf0f1;
+        }
+
+        .dark-mode #settings-panel {
+            background: #34495e;
+            color: #ecf0f1;
+            border: 1px solid #2c3e50;
+        }
+
+        .dark-mode #history {
+            color: #ecf0f1;
+        }
+
+        .dark-mode #history-list li {
+            background: #3b4b5a;
+            color: #ecf0f1;
+            border: 1px solid #2c3e50;
+        }
+
+        .dark-mode input[type="text"], 
+        .dark-mode select,
+        .dark-mode input[type="checkbox"] {
+            background: #3b4b5a;
+            color: #ecf0f1;
+            border: 1px solid #2c3e50;
+        }
+
+        .dark-mode .popup {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #ecf0f1;
+            border: 1px solid #ecf0f1;
+        }
+
     </style>
 </head>
 <body>
-    <button id="dark-mode-btn">Dark Mode</button>
-    <button id="light-mode-btn">Light Mode</button>
-    <h1 id="main-heading">Speech to Text Converter</h1>
-    
-    <button id="start-btn">Start Recording</button>
-    <button id="stop-btn">Stop Recording</button>
-    <button id="pause-resume-btn">Pause</button>
-    <button id="save-btn">Save as File</button>
+    <!-- Include jsPDF from CDN for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <button id="toggle-theme-btn">Toggle Theme</button>
+    <h1 id="main-heading">Enhanced Speech to Text Converter</h1>
+
+    <div id="controls">
+        <button id="start-btn">Start Recording</button>
+        <button id="stop-btn" disabled>Stop Recording</button>
+        <button id="pause-resume-btn">Pause</button>
+        <button id="save-btn">Save as TXT</button>
+        <button id="pdf-btn">Export as PDF</button>
+        <button id="tts-btn">Play Text (TTS)</button>
+    </div>
     
     <div id="output" contenteditable="true" spellcheck="true"></div>
     <div id="timer">Timer: 00:00:00</div>
     <div id="status-indicator">● Listening...</div>
     <div id="word-count">Word Count: 0</div>
+
+    <div id="settings-panel">
+        <h3>Settings</h3>
+        <label for="language-select">Language:</label>
+        <select id="language-select">
+            <option value="en-US">English (US)</option>
+            <option value="en-GB">English (UK)</option>
+            <option value="fr-FR">French (FR)</option>
+            <option value="de-DE">German (DE)</option>
+            <option value="es-ES">Spanish (ES)</option>
+        </select>
+        <br>
+        <label><input type="checkbox" id="interim-checkbox" /> Use Interim Results</label>
+        <label><input type="checkbox" id="continuous-checkbox" checked/> Continuous Recognition</label>
+    </div>
+
     <div id="history">
         <h3>Transcription History</h3>
+        <input type="text" id="history-search" placeholder="Search history..." />
+        <button id="clear-history-btn">Clear History</button>
         <ul id="history-list"></ul>
     </div>
 
@@ -149,19 +261,34 @@
         const stopBtn = document.getElementById('stop-btn');
         const pauseResumeBtn = document.getElementById('pause-resume-btn');
         const saveBtn = document.getElementById('save-btn');
+        const pdfBtn = document.getElementById('pdf-btn');
+        const ttsBtn = document.getElementById('tts-btn');
         const output = document.getElementById('output');
         const timerDisplay = document.getElementById('timer');
         const statusIndicator = document.getElementById('status-indicator');
         const wordCountDisplay = document.getElementById('word-count');
         const historyList = document.getElementById('history-list');
-        const darkModeBtn = document.getElementById('dark-mode-btn');
-        const lightModeBtn = document.getElementById('light-mode-btn');
+        const clearHistoryBtn = document.getElementById('clear-history-btn');
+        const historySearch = document.getElementById('history-search');
+        const toggleThemeBtn = document.getElementById('toggle-theme-btn');
         const mainHeading = document.getElementById('main-heading');
+
+        const languageSelect = document.getElementById('language-select');
+        const interimCheckbox = document.getElementById('interim-checkbox');
+        const continuousCheckbox = document.getElementById('continuous-checkbox');
 
         let timerInterval;
         let startTime;
         let speechBuffer = '';
         let isPaused = false;
+        let currentLanguage = languageSelect.value;
+        let useInterim = interimCheckbox.checked;
+        let useContinuous = continuousCheckbox.checked;
+        let darkMode = false;
+
+        // Load history from local storage
+        let historyData = JSON.parse(localStorage.getItem('transcriptionHistory')) || [];
+        renderHistoryItems(historyData);
 
         function startTimer() {
             startTime = new Date();
@@ -179,16 +306,18 @@
         }
 
         function updateWordCount() {
-            const wordCount = speechBuffer.split(' ').filter(word => word).length;
+            const wordCount = speechBuffer.trim().split(/\s+/).filter(word => word).length;
             wordCountDisplay.textContent = `Word Count: ${wordCount}`;
         }
 
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+        let recognition;
         if (SpeechRecognition) {
-            const recognition = new SpeechRecognition();
-            recognition.continuous = true;
-            recognition.interimResults = false;
-            recognition.lang = 'en-US';
+            recognition = new SpeechRecognition();
+            recognition.continuous = useContinuous;
+            recognition.interimResults = useInterim;
+            recognition.lang = currentLanguage;
 
             recognition.onstart = function() {
                 statusIndicator.classList.add('active');
@@ -200,13 +329,29 @@
 
             recognition.onresult = function(event) {
                 for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    let transcript = event.results[i][0].transcript;
                     if (event.results[i].isFinal) {
-                        let transcript = event.results[i][0].transcript;
                         transcript = transcript.replace(/\./g, '');
                         speechBuffer += transcript + ' ';
                         output.textContent = speechBuffer;
                         updateWordCount();
+                    } else if (useInterim) {
+                        // Show interim results
+                        let interimText = speechBuffer + transcript;
+                        output.textContent = interimText;
                     }
+                }
+
+                // Voice Commands (simple example)
+                const command = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
+                if (command === 'start') {
+                    startRecognition();
+                } else if (command === 'stop') {
+                    stopRecognition();
+                } else if (command === 'pause') {
+                    pauseRecognition();
+                } else if (command === 'resume') {
+                    resumeRecognition();
                 }
             };
 
@@ -216,71 +361,67 @@
 
             recognition.onend = function() {
                 if (!stopBtn.disabled && !isPaused) {
-                    recognition.start();
+                    // Restart if continuous
+                    if (useContinuous) {
+                        recognition.start();
+                    }
                 } else {
                     stopTimer();
-                    const text = output.innerText;
-                    navigator.clipboard.writeText(text).then(() => {
-                        const popup = document.createElement('div');
-                        popup.classList.add('popup');
-                        popup.textContent = 'Text copied to clipboard!';
-                        document.body.appendChild(popup);
-                        setTimeout(() => {
-                            document.body.removeChild(popup);
-                        }, 2000);
-                    }).catch(err => {
-                        console.error('Could not copy text: ', err);
-                    });
-                    const historyItem = document.createElement('li');
-                    historyItem.textContent = speechBuffer;
-                    const copyButton = document.createElement('button');
-                    copyButton.textContent = 'Copy';
-                    copyButton.style.marginLeft = '10px';
-                    copyButton.addEventListener('click', () => {
-                        navigator.clipboard.writeText(historyItem.textContent).then(() => {
-                            console.log('History text copied to clipboard');
-                        }).catch(err => {
-                            console.error('Could not copy history text: ', err);
-                        });
-                    });
-                    historyItem.appendChild(copyButton);
-                    historyList.appendChild(historyItem);
+                    copyToClipboard(output.innerText, 'Text copied to clipboard!');
+                    addHistoryItem(speechBuffer.trim());
                 }
                 statusIndicator.classList.remove('active');
             };
-
-            startBtn.addEventListener('click', () => {
-                stopBtn.disabled = false;
-                recognition.lang = 'en-US';
-                if (!isPaused) {
-                    output.textContent = '';
-                    speechBuffer = '';
-                }
-                recognition.start();
-            });
-
-            stopBtn.addEventListener('click', () => {
-                stopBtn.disabled = true;
-                isPaused = false;
-                recognition.stop();
-            });
-
-            pauseResumeBtn.addEventListener('click', () => {
-                if (isPaused) {
-                    recognition.start();
-                    pauseResumeBtn.textContent = 'Pause';
-                    statusIndicator.classList.add('active');
-                    isPaused = false;
-                } else {
-                    recognition.stop();
-                    pauseResumeBtn.textContent = 'Resume';
-                    statusIndicator.classList.remove('active');
-                    isPaused = true;
-                }
-            });
         } else {
             console.error('Web Speech API is not supported in this browser.');
         }
+
+        function startRecognition() {
+            if (!recognition) return;
+            stopBtn.disabled = false;
+            if (!isPaused) {
+                output.textContent = '';
+                speechBuffer = '';
+            }
+            recognition.lang = currentLanguage;
+            recognition.interimResults = useInterim;
+            recognition.continuous = useContinuous;
+            recognition.start();
+        }
+
+        function stopRecognition() {
+            if (!recognition) return;
+            stopBtn.disabled = true;
+            isPaused = false;
+            recognition.stop();
+        }
+
+        function pauseRecognition() {
+            if (!recognition) return;
+            recognition.stop();
+            isPaused = true;
+            pauseResumeBtn.textContent = 'Resume';
+            statusIndicator.classList.remove('active');
+        }
+
+        function resumeRecognition() {
+            if (!recognition) return;
+            recognition.start();
+            isPaused = false;
+            pauseResumeBtn.textContent = 'Pause';
+            statusIndicator.classList.add('active');
+        }
+
+        startBtn.addEventListener('click', startRecognition);
+        stopBtn.addEventListener('click', stopRecognition);
+
+        pauseResumeBtn.addEventListener('click', () => {
+            if (isPaused) {
+                resumeRecognition();
+            } else {
+                pauseRecognition();
+            }
+        });
 
         saveBtn.addEventListener('click', () => {
             const blob = new Blob([output.innerText], { type: 'text/plain' });
@@ -290,32 +431,103 @@
             link.click();
         });
 
-        darkModeBtn.addEventListener('click', () => {
-            document.body.style.background = '#2c3e50';
-            document.body.style.color = '#ecf0f1';
-            output.style.background = '#34495e';
-            output.style.color = '#ecf0f1';
-            timerDisplay.style.background = '#2c3e50';
-            timerDisplay.style.color = '#ecf0f1';
-            mainHeading.style.color = '#ecf0f1';
-            const headings = document.querySelectorAll('h3');
-            headings.forEach(heading => {
-                heading.style.color = '#ecf0f1';
-            });
+        pdfBtn.addEventListener('click', () => {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const text = output.innerText;
+            const lines = doc.splitTextToSize(text, 180);
+            doc.text(lines, 10, 10);
+            doc.save('transcription.pdf');
         });
 
-        lightModeBtn.addEventListener('click', () => {
-            document.body.style.background = 'linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%)';
-            document.body.style.color = '#333';
-            output.style.background = 'white';
-            output.style.color = '#333';
-            timerDisplay.style.background = '#ecf0f1';
-            timerDisplay.style.color = '#333';
-            mainHeading.style.color = '#2c3e50';
-            const headings = document.querySelectorAll('h3');
-            headings.forEach(heading => {
-                heading.style.color = '#2c3e50';
+        ttsBtn.addEventListener('click', () => {
+            const utterance = new SpeechSynthesisUtterance(output.innerText);
+            speechSynthesis.speak(utterance);
+        });
+
+        toggleThemeBtn.addEventListener('click', () => {
+            darkMode = !darkMode;
+            if (darkMode) {
+                document.body.classList.add('dark-mode');
+            } else {
+                document.body.classList.remove('dark-mode');
+            }
+        });
+
+        function copyToClipboard(text, message) {
+            navigator.clipboard.writeText(text).then(() => {
+                showPopup(message);
+            }).catch(err => {
+                console.error('Could not copy text: ', err);
             });
+        }
+
+        function showPopup(text) {
+            const popup = document.createElement('div');
+            popup.classList.add('popup');
+            popup.textContent = text;
+            document.body.appendChild(popup);
+            setTimeout(() => {
+                document.body.removeChild(popup);
+            }, 2000);
+        }
+
+        function addHistoryItem(text) {
+            if (!text) return;
+            historyData.push(text);
+            localStorage.setItem('transcriptionHistory', JSON.stringify(historyData));
+            renderHistoryItems(historyData);
+        }
+
+        function renderHistoryItems(data) {
+            historyList.innerHTML = '';
+            data.forEach((item, index) => {
+                const historyItem = document.createElement('li');
+                historyItem.textContent = item;
+                
+                const copyButton = document.createElement('button');
+                copyButton.textContent = 'Copy';
+                copyButton.addEventListener('click', () => {
+                    copyToClipboard(item, 'History text copied!');
+                });
+
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Delete';
+                deleteButton.style.backgroundColor = '#e74c3c';
+                deleteButton.addEventListener('click', () => {
+                    historyData.splice(index, 1);
+                    localStorage.setItem('transcriptionHistory', JSON.stringify(historyData));
+                    renderHistoryItems(historyData);
+                });
+
+                historyItem.appendChild(document.createElement('br'));
+                historyItem.appendChild(copyButton);
+                historyItem.appendChild(deleteButton);
+                historyList.appendChild(historyItem);
+            });
+        }
+
+        clearHistoryBtn.addEventListener('click', () => {
+            historyData = [];
+            localStorage.setItem('transcriptionHistory', JSON.stringify(historyData));
+            renderHistoryItems(historyData);
+        });
+
+        historySearch.addEventListener('input', () => {
+            const searchTerm = historySearch.value.toLowerCase();
+            const filtered = historyData.filter(item => item.toLowerCase().includes(searchTerm));
+            renderHistoryItems(filtered);
+        });
+
+        // Update settings on change
+        languageSelect.addEventListener('change', () => {
+            currentLanguage = languageSelect.value;
+        });
+        interimCheckbox.addEventListener('change', () => {
+            useInterim = interimCheckbox.checked;
+        });
+        continuousCheckbox.addEventListener('change', () => {
+            useContinuous = continuousCheckbox.checked;
         });
     </script>
 </body>
