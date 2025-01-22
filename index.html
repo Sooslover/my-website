@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/> 
-    <title>Enhanced Speech to Text Converter</title>
+    <title>Combined Page: Prompt Generator & Enhanced Speech to Text</title>
     <style>
+        /* ============ BASE STYLES (FROM ENHANCED SPEECH-TO-TEXT) ============ */
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
@@ -28,14 +30,6 @@
         h1 {
             margin-top: 20px;
             font-size: 2.5rem;
-        }
-
-        #controls {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin: 10px 0;
-            gap: 10px;
         }
 
         button, select, input[type="checkbox"] {
@@ -80,6 +74,14 @@
             border-radius: 5px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             transition: background-color 0.3s, color 0.3s;
+        }
+
+        #controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 10px 0;
+            gap: 10px;
         }
 
         #timer {
@@ -185,7 +187,67 @@
             margin-right: 10px;
         }
 
-        /* Dark Mode Styles */
+        /* =============== NEW LAYOUT FOR TWO SECTIONS SIDE-BY-SIDE =============== */
+        #two-column-layout {
+            display: flex;
+            flex-wrap: wrap; /* allows wrapping on smaller screens */
+            gap: 20px;
+            width: 100%;
+            max-width: 1300px; /* adjust as desired */
+        }
+
+        #left-column, #right-column {
+            flex: 1;
+            min-width: 300px; /* ensures columns don’t collapse too small */
+        }
+
+        /* =============== PROMPT GENERATOR SPECIFIC STYLES =============== */
+        #promptContainer {
+            background-color: #ffffff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 15px;
+        }
+        #promptContainer h2 {
+            font-size: 1.4rem;
+            margin-top: 0;
+            text-align: center;
+            color: #2c3e50;
+        }
+        #promptContainer .section {
+            margin-bottom: 8px;
+        }
+        #promptContainer label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        #promptContainer textarea {
+            width: 100%;
+            box-sizing: border-box;
+            font-family: inherit;
+            font-size: 14px;
+            padding: 4px;
+            resize: vertical;
+        }
+        #promptContainer .button-container {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        #promptContainer textarea#finalPrompt {
+            margin-top: 8px;
+            height: 80px;
+        }
+        #promptContainer #copySuccess {
+            display: none;
+            margin-top: 8px;
+            color: #0b730b;
+            font-weight: bold;
+        }
+
+        /* =============== DARK MODE STYLES =============== */
         .dark-mode {
             background: #2c3e50;
             color: #ecf0f1;
@@ -247,6 +309,28 @@
             border: 1px solid #ecf0f1;
         }
 
+        /* =============== SPECIFIC DARK MODE RULES FOR THE PROMPT CONTAINER =============== */
+        .dark-mode #promptContainer {
+            background: #34495e;    /* Darken background to match your dark theme */
+            color: #ecf0f1;         /* Light text color */
+            border: 1px solid #2c3e50;
+        }
+
+        .dark-mode #promptContainer h2,
+        .dark-mode #promptContainer label {
+            color: #ecf0f1;
+        }
+
+        .dark-mode #promptContainer textarea {
+            background: #3b4b5a;    /* A slightly lighter dark gray for the textarea */
+            color: #ecf0f1;         /* Light text */
+            border: 1px solid #2c3e50;
+        }
+
+        .dark-mode #promptContainer textarea::placeholder {
+            color: #bbb;            /* Placeholder text color */
+        }
+
         /* Responsive Styles */
         @media (max-width: 600px) {
             h1 {
@@ -273,316 +357,444 @@
     <!-- Include jsPDF from CDN for PDF generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
+    <!-- THEME TOGGLE BUTTON -->
     <button id="toggle-theme-btn">Toggle Theme</button>
+
     <h1 id="main-heading">Enhanced Speech to Text Converter</h1>
 
-    <div id="controls">
-        <button id="start-btn">Start Recording</button>
-        <button id="stop-btn" disabled>Stop Recording</button>
-        <button id="pause-resume-btn">Pause</button>
-        <button id="save-btn">Save as TXT</button>
-        <button id="pdf-btn">Export as PDF</button>
-        <button id="tts-btn">Play Text (TTS)</button>
-    </div>
-    
-    <div id="output" contenteditable="true" spellcheck="true"></div>
-    <div id="timer">Timer: 00:00:00</div>
-    <div id="status-indicator">● Listening...</div>
-    <div id="word-count">Word Count: 0</div>
+    <!-- TWO-COLUMN LAYOUT -->
+    <div id="two-column-layout">
 
-    <div id="settings-panel">
-        <h3>Settings</h3>
-        <label for="language-select">Language:</label>
-        <select id="language-select">
-            <option value="en-US">English (US)</option>
-            <option value="en-GB">English (UK)</option>
-            <option value="fr-FR">French (FR)</option>
-            <option value="de-DE">German (DE)</option>
-            <option value="es-ES">Spanish (ES)</option>
-        </select>
-        <br>
-        <label><input type="checkbox" id="interim-checkbox" /> Use Interim Results</label>
-        <label><input type="checkbox" id="continuous-checkbox" checked/> Continuous Recognition</label>
+        <!-- LEFT COLUMN: Prompt Template Generator -->
+        <div id="left-column">
+            <div id="promptContainer">
+                <h2>Prompt Template Generator</h2>
+
+                <!-- 1) "You are a" -->
+                <div class="section">
+                    <label for="roleContext">You are a:</label>
+                    <textarea id="roleContext" rows="1" placeholder=""></textarea>
+                </div>
+
+                <!-- 2) "Your task is to" -->
+                <div class="section">
+                    <label for="objective">Your task is to:</label>
+                    <textarea id="objective" rows="1" placeholder=""></textarea>
+                </div>
+
+                <!-- 3) "Provide" -->
+                <div class="section">
+                    <label for="detailedInstructions">Provide:</label>
+                    <textarea id="detailedInstructions" rows="2" placeholder=""></textarea>
+                </div>
+
+                <!-- 4) Background/Context -->
+                <div class="section">
+                    <label for="backgroundContext">Background/Context:</label>
+                    <textarea id="backgroundContext" rows="2" placeholder=""></textarea>
+                </div>
+
+                <!-- 5) "Present your answer" -->
+                <div class="section">
+                    <label for="outputFormat">Present your answer:</label>
+                    <textarea id="outputFormat" rows="1" placeholder=""></textarea>
+                </div>
+
+                <!-- Buttons and output -->
+                <div class="button-container">
+                    <button id="generateBtn" onclick="generateAndCopyPrompt()">Generate and Copy Prompt</button>
+                    <button id="clearBtn" onclick="clearAllFields()">Clear All</button>
+                </div>
+                <textarea id="finalPrompt" readonly></textarea>
+                <div id="copySuccess">Copied to clipboard!</div>
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN: Enhanced Speech to Text Converter -->
+        <div id="right-column">
+            <!-- Controls -->
+            <div id="controls">
+                <button id="start-btn">Start Recording</button>
+                <button id="stop-btn" disabled>Stop Recording</button>
+                <button id="pause-resume-btn">Pause</button>
+                <button id="save-btn">Save as TXT</button>
+                <button id="pdf-btn">Export as PDF</button>
+                <button id="tts-btn">Play Text (TTS)</button>
+            </div>
+
+            <!-- Output area -->
+            <div id="output" contenteditable="true" spellcheck="true"></div>
+            <div id="timer">Timer: 00:00:00</div>
+            <div id="status-indicator">● Listening...</div>
+            <div id="word-count">Word Count: 0</div>
+
+            <!-- Settings panel -->
+            <div id="settings-panel">
+                <h3>Settings</h3>
+                <label for="language-select">Language:</label>
+                <select id="language-select">
+                    <option value="en-US">English (US)</option>
+                    <option value="en-GB">English (UK)</option>
+                    <option value="fr-FR">French (FR)</option>
+                    <option value="de-DE">German (DE)</option>
+                    <option value="es-ES">Spanish (ES)</option>
+                </select>
+                <br>
+                <label><input type="checkbox" id="interim-checkbox" /> Use Interim Results</label>
+                <label><input type="checkbox" id="continuous-checkbox" checked/> Continuous Recognition</label>
+            </div>
+
+            <!-- History -->
+            <div id="history">
+                <h3>Transcription History</h3>
+                <input type="text" id="history-search" placeholder="Search history..." />
+                <button id="clear-history-btn">Clear History</button>
+                <ul id="history-list"></ul>
+            </div>
+        </div>
     </div>
 
-    <div id="history">
-        <h3>Transcription History</h3>
-        <input type="text" id="history-search" placeholder="Search history..." />
-        <button id="clear-history-btn">Clear History</button>
-        <ul id="history-list"></ul>
-    </div>
-
+    <!-- =============== SCRIPTS =============== -->
     <script>
-        const startBtn = document.getElementById('start-btn');
-        const stopBtn = document.getElementById('stop-btn');
-        const pauseResumeBtn = document.getElementById('pause-resume-btn');
-        const saveBtn = document.getElementById('save-btn');
-        const pdfBtn = document.getElementById('pdf-btn');
-        const ttsBtn = document.getElementById('tts-btn');
-        const output = document.getElementById('output');
-        const timerDisplay = document.getElementById('timer');
-        const statusIndicator = document.getElementById('status-indicator');
-        const wordCountDisplay = document.getElementById('word-count');
-        const historyList = document.getElementById('history-list');
-        const clearHistoryBtn = document.getElementById('clear-history-btn');
-        const historySearch = document.getElementById('history-search');
-        const toggleThemeBtn = document.getElementById('toggle-theme-btn');
-        const mainHeading = document.getElementById('main-heading');
+    /************* PROMPT TEMPLATE GENERATOR LOGIC *************/
+    function generateAndCopyPrompt() {
+      // Retrieve the content of each field
+      const roleContext = document.getElementById("roleContext").value.trim();
+      const objective = document.getElementById("objective").value.trim();
+      const detailedInstructions = document.getElementById("detailedInstructions").value.trim();
+      const backgroundContext = document.getElementById("backgroundContext").value.trim();
+      const outputFormat = document.getElementById("outputFormat").value.trim();
 
-        const languageSelect = document.getElementById('language-select');
-        const interimCheckbox = document.getElementById('interim-checkbox');
-        const continuousCheckbox = document.getElementById('continuous-checkbox');
+      // Build the final prompt, including each phrase only if the field is filled
+      let finalPromptText = "";
 
-        let timerInterval;
-        let startTime;
-        let speechBuffer = '';
-        let isPaused = false;
-        let currentLanguage = languageSelect.value;
-        let useInterim = interimCheckbox.checked;
-        let useContinuous = continuousCheckbox.checked;
-        let darkMode = false;
+      if (roleContext) {
+        finalPromptText += `You are a ${roleContext}\n\n`;
+      }
+      if (objective) {
+        finalPromptText += `Your task is to ${objective}\n\n`;
+      }
+      if (detailedInstructions) {
+        finalPromptText += `Provide ${detailedInstructions}\n\n`;
+      }
+      if (backgroundContext) {
+        finalPromptText += `Background/Context:\n${backgroundContext}\n\n`;
+      }
+      if (outputFormat) {
+        finalPromptText += `Present your answer ${outputFormat}\n\n`;
+      }
 
-        // Load history from local storage
-        let historyData = JSON.parse(localStorage.getItem('transcriptionHistory')) || [];
-        renderHistoryItems(historyData);
+      // Trim extra spaces/newlines
+      finalPromptText = finalPromptText.trim();
 
-        function startTimer() {
-            startTime = new Date();
-            timerInterval = setInterval(() => {
-                const elapsedTime = new Date(new Date() - startTime);
-                const hours = String(elapsedTime.getUTCHours()).padStart(2, '0');
-                const minutes = String(elapsedTime.getUTCMinutes()).padStart(2, '0');
-                const seconds = String(elapsedTime.getUTCSeconds()).padStart(2, '0');
-                timerDisplay.textContent = `Timer: ${hours}:${minutes}:${seconds}`;
-            }, 1000);
-        }
+      // Place the result in the finalPrompt textarea
+      const finalPromptArea = document.getElementById("finalPrompt");
+      finalPromptArea.value = finalPromptText;
 
-        function stopTimer() {
-            clearInterval(timerInterval);
-        }
+      // Copy to clipboard
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(finalPromptText)
+          .then(() => showCopySuccess())
+          .catch(err => console.error("Error copying:", err));
+      } else {
+        // Fallback for older browsers
+        finalPromptArea.select();
+        document.execCommand("copy");
+        showCopySuccess();
+      }
+    }
 
-        function updateWordCount() {
-            const wordCount = speechBuffer.trim().split(/\s+/).filter(word => word).length;
-            wordCountDisplay.textContent = `Word Count: ${wordCount}`;
-        }
+    // Show a transient "copied" message for one second
+    function showCopySuccess() {
+      const copySuccessDiv = document.getElementById("copySuccess");
+      copySuccessDiv.style.display = "block";
+      setTimeout(() => {
+        copySuccessDiv.style.display = "none";
+      }, 1000);
+    }
 
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    // Clear all text fields and the final prompt area
+    function clearAllFields() {
+      document.getElementById("roleContext").value = "";
+      document.getElementById("objective").value = "";
+      document.getElementById("detailedInstructions").value = "";
+      document.getElementById("backgroundContext").value = "";
+      document.getElementById("outputFormat").value = "";
+      document.getElementById("finalPrompt").value = "";
+      document.getElementById("copySuccess").style.display = "none";
+    }
 
-        let recognition;
-        if (SpeechRecognition) {
-            recognition = new SpeechRecognition();
-            recognition.continuous = useContinuous;
-            recognition.interimResults = useInterim;
-            recognition.lang = currentLanguage;
+    /************* ENHANCED SPEECH-TO-TEXT CONVERTER LOGIC *************/
+    const startBtn = document.getElementById('start-btn');
+    const stopBtn = document.getElementById('stop-btn');
+    const pauseResumeBtn = document.getElementById('pause-resume-btn');
+    const saveBtn = document.getElementById('save-btn');
+    const pdfBtn = document.getElementById('pdf-btn');
+    const ttsBtn = document.getElementById('tts-btn');
+    const output = document.getElementById('output');
+    const timerDisplay = document.getElementById('timer');
+    const statusIndicator = document.getElementById('status-indicator');
+    const wordCountDisplay = document.getElementById('word-count');
+    const historyList = document.getElementById('history-list');
+    const clearHistoryBtn = document.getElementById('clear-history-btn');
+    const historySearch = document.getElementById('history-search');
+    const toggleThemeBtn = document.getElementById('toggle-theme-btn');
+    const mainHeading = document.getElementById('main-heading');
 
-            recognition.onstart = function() {
-                statusIndicator.classList.add('active');
-                if (!isPaused) {
-                    speechBuffer = output.textContent;
-                }
-                startTimer();
-            };
+    const languageSelect = document.getElementById('language-select');
+    const interimCheckbox = document.getElementById('interim-checkbox');
+    const continuousCheckbox = document.getElementById('continuous-checkbox');
 
-            recognition.onresult = function(event) {
-                for (let i = event.resultIndex; i < event.results.length; ++i) {
-                    let transcript = event.results[i][0].transcript;
-                    if (event.results[i].isFinal) {
-                        transcript = transcript.replace(/\./g, '');
-                        speechBuffer += transcript + ' ';
-                        output.textContent = speechBuffer;
-                        updateWordCount();
-                    } else if (useInterim) {
-                        let interimText = speechBuffer + transcript;
-                        output.textContent = interimText;
-                    }
-                }
+    let timerInterval;
+    let startTime;
+    let speechBuffer = '';
+    let isPaused = false;
+    let currentLanguage = languageSelect.value;
+    let useInterim = interimCheckbox.checked;
+    let useContinuous = continuousCheckbox.checked;
+    let darkMode = false;
 
-                // Voice Commands (simple example)
-                const command = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
-                if (command === 'start') {
-                    startRecognition();
-                } else if (command === 'stop') {
-                    stopRecognition();
-                } else if (command === 'pause') {
-                    pauseRecognition();
-                } else if (command === 'resume') {
-                    resumeRecognition();
-                }
-            };
+    // Load history from local storage
+    let historyData = JSON.parse(localStorage.getItem('transcriptionHistory')) || [];
+    renderHistoryItems(historyData);
 
-            recognition.onerror = function(event) {
-                console.error('Error occurred in recognition:', event.error);
-            };
+    function startTimer() {
+        startTime = new Date();
+        timerInterval = setInterval(() => {
+            const elapsedTime = new Date(new Date() - startTime);
+            const hours = String(elapsedTime.getUTCHours()).padStart(2, '0');
+            const minutes = String(elapsedTime.getUTCMinutes()).padStart(2, '0');
+            const seconds = String(elapsedTime.getUTCSeconds()).padStart(2, '0');
+            timerDisplay.textContent = `Timer: ${hours}:${minutes}:${seconds}`;
+        }, 1000);
+    }
 
-            recognition.onend = function() {
-                if (!stopBtn.disabled && !isPaused) {
-                    if (useContinuous) {
-                        recognition.start();
-                    }
-                } else {
-                    stopTimer();
-                    copyToClipboard(output.innerText, 'Text copied to clipboard!');
-                    addHistoryItem(speechBuffer.trim());
-                }
-                statusIndicator.classList.remove('active');
-            };
-        } else {
-            console.error('Web Speech API is not supported in this browser.');
-        }
+    function stopTimer() {
+        clearInterval(timerInterval);
+    }
 
-        function startRecognition() {
-            if (!recognition) return;
-            stopBtn.disabled = false;
-            if (!isPaused) {
-                output.textContent = '';
-                speechBuffer = '';
-            }
-            recognition.lang = currentLanguage;
-            recognition.interimResults = useInterim;
-            recognition.continuous = useContinuous;
-            recognition.start();
-        }
+    function updateWordCount() {
+        const wordCount = speechBuffer.trim().split(/\s+/).filter(word => word).length;
+        wordCountDisplay.textContent = `Word Count: ${wordCount}`;
+    }
 
-        function stopRecognition() {
-            if (!recognition) return;
-            stopBtn.disabled = true;
-            isPaused = false;
-            recognition.stop();
-        }
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let recognition;
 
-        function pauseRecognition() {
-            if (!recognition) return;
-            recognition.stop();
-            isPaused = true;
-            pauseResumeBtn.textContent = 'Resume';
-            statusIndicator.classList.remove('active');
-        }
+    if (SpeechRecognition) {
+        recognition = new SpeechRecognition();
+        recognition.continuous = useContinuous;
+        recognition.interimResults = useInterim;
+        recognition.lang = currentLanguage;
 
-        function resumeRecognition() {
-            if (!recognition) return;
-            recognition.start();
-            isPaused = false;
-            pauseResumeBtn.textContent = 'Pause';
+        recognition.onstart = function() {
             statusIndicator.classList.add('active');
-        }
+            if (!isPaused) {
+                speechBuffer = output.textContent;
+            }
+            startTimer();
+        };
 
-        startBtn.addEventListener('click', startRecognition);
-        stopBtn.addEventListener('click', stopRecognition);
+        recognition.onresult = function(event) {
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+                let transcript = event.results[i][0].transcript;
+                if (event.results[i].isFinal) {
+                    transcript = transcript.replace(/\./g, '');
+                    speechBuffer += transcript + ' ';
+                    output.textContent = speechBuffer;
+                    updateWordCount();
+                } else if (useInterim) {
+                    let interimText = speechBuffer + transcript;
+                    output.textContent = interimText;
+                }
+            }
 
-        pauseResumeBtn.addEventListener('click', () => {
-            if (isPaused) {
-                resumeRecognition();
-            } else {
+            // Simple voice commands
+            const command = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
+            if (command === 'start') {
+                startRecognition();
+            } else if (command === 'stop') {
+                stopRecognition();
+            } else if (command === 'pause') {
                 pauseRecognition();
+            } else if (command === 'resume') {
+                resumeRecognition();
             }
-        });
+        };
 
-        saveBtn.addEventListener('click', () => {
-            const blob = new Blob([output.innerText], { type: 'text/plain' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = 'transcription.txt';
-            link.click();
-        });
+        recognition.onerror = function(event) {
+            console.error('Error occurred in recognition:', event.error);
+        };
 
-        pdfBtn.addEventListener('click', () => {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            const text = output.innerText;
-            const lines = doc.splitTextToSize(text, 180);
-            doc.text(lines, 10, 10);
-            doc.save('transcription.pdf');
-        });
-
-        ttsBtn.addEventListener('click', () => {
-            const utterance = new SpeechSynthesisUtterance(output.innerText);
-            speechSynthesis.speak(utterance);
-        });
-
-        toggleThemeBtn.addEventListener('click', () => {
-            darkMode = !darkMode;
-            if (darkMode) {
-                document.body.classList.add('dark-mode');
+        recognition.onend = function() {
+            if (!stopBtn.disabled && !isPaused) {
+                if (useContinuous) {
+                    recognition.start();
+                }
             } else {
-                document.body.classList.remove('dark-mode');
+                stopTimer();
+                copyToClipboard(output.innerText, 'Text copied to clipboard!');
+                addHistoryItem(speechBuffer.trim());
             }
-        });
+            statusIndicator.classList.remove('active');
+        };
+    } else {
+        console.error('Web Speech API is not supported in this browser.');
+    }
 
-        function copyToClipboard(text, message) {
-            navigator.clipboard.writeText(text).then(() => {
-                showPopup(message);
-            }).catch(err => {
-                console.error('Could not copy text: ', err);
+    function startRecognition() {
+        if (!recognition) return;
+        stopBtn.disabled = false;
+        if (!isPaused) {
+            output.textContent = '';
+            speechBuffer = '';
+        }
+        recognition.lang = currentLanguage;
+        recognition.interimResults = useInterim;
+        recognition.continuous = useContinuous;
+        recognition.start();
+    }
+
+    function stopRecognition() {
+        if (!recognition) return;
+        stopBtn.disabled = true;
+        isPaused = false;
+        recognition.stop();
+    }
+
+    function pauseRecognition() {
+        if (!recognition) return;
+        recognition.stop();
+        isPaused = true;
+        pauseResumeBtn.textContent = 'Resume';
+        statusIndicator.classList.remove('active');
+    }
+
+    function resumeRecognition() {
+        if (!recognition) return;
+        recognition.start();
+        isPaused = false;
+        pauseResumeBtn.textContent = 'Pause';
+        statusIndicator.classList.add('active');
+    }
+
+    startBtn.addEventListener('click', startRecognition);
+    stopBtn.addEventListener('click', stopRecognition);
+
+    pauseResumeBtn.addEventListener('click', () => {
+        if (isPaused) {
+            resumeRecognition();
+        } else {
+            pauseRecognition();
+        }
+    });
+
+    saveBtn.addEventListener('click', () => {
+        const blob = new Blob([output.innerText], { type: 'text/plain' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'transcription.txt';
+        link.click();
+    });
+
+    pdfBtn.addEventListener('click', () => {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        const text = output.innerText;
+        const lines = doc.splitTextToSize(text, 180);
+        doc.text(lines, 10, 10);
+        doc.save('transcription.pdf');
+    });
+
+    ttsBtn.addEventListener('click', () => {
+        const utterance = new SpeechSynthesisUtterance(output.innerText);
+        speechSynthesis.speak(utterance);
+    });
+
+    toggleThemeBtn.addEventListener('click', () => {
+        darkMode = !darkMode;
+        if (darkMode) {
+            document.body.classList.add('dark-mode');
+        } else {
+            document.body.classList.remove('dark-mode');
+        }
+    });
+
+    function copyToClipboard(text, message) {
+        navigator.clipboard.writeText(text).then(() => {
+            showPopup(message);
+        }).catch(err => {
+            console.error('Could not copy text: ', err);
+        });
+    }
+
+    function showPopup(text) {
+        const popup = document.createElement('div');
+        popup.classList.add('popup');
+        popup.textContent = text;
+        document.body.appendChild(popup);
+        setTimeout(() => {
+            document.body.removeChild(popup);
+        }, 2000);
+    }
+
+    function addHistoryItem(text) {
+        if (!text) return;
+        historyData.push(text);
+        localStorage.setItem('transcriptionHistory', JSON.stringify(historyData));
+        renderHistoryItems(historyData);
+    }
+
+    function renderHistoryItems(data) {
+        historyList.innerHTML = '';
+        data.forEach((item, index) => {
+            const historyItem = document.createElement('li');
+            historyItem.textContent = item;
+            
+            const copyButton = document.createElement('button');
+            copyButton.textContent = 'Copy';
+            copyButton.addEventListener('click', () => {
+                copyToClipboard(item, 'History text copied!');
             });
-        }
 
-        function showPopup(text) {
-            const popup = document.createElement('div');
-            popup.classList.add('popup');
-            popup.textContent = text;
-            document.body.appendChild(popup);
-            setTimeout(() => {
-                document.body.removeChild(popup);
-            }, 2000);
-        }
-
-        function addHistoryItem(text) {
-            if (!text) return;
-            historyData.push(text);
-            localStorage.setItem('transcriptionHistory', JSON.stringify(historyData));
-            renderHistoryItems(historyData);
-        }
-
-        function renderHistoryItems(data) {
-            historyList.innerHTML = '';
-            data.forEach((item, index) => {
-                const historyItem = document.createElement('li');
-                historyItem.textContent = item;
-                
-                const copyButton = document.createElement('button');
-                copyButton.textContent = 'Copy';
-                copyButton.addEventListener('click', () => {
-                    copyToClipboard(item, 'History text copied!');
-                });
-
-                const deleteButton = document.createElement('button');
-                deleteButton.textContent = 'Delete';
-                deleteButton.style.backgroundColor = '#e74c3c';
-                deleteButton.addEventListener('click', () => {
-                    historyData.splice(index, 1);
-                    localStorage.setItem('transcriptionHistory', JSON.stringify(historyData));
-                    renderHistoryItems(historyData);
-                });
-
-                historyItem.appendChild(document.createElement('br'));
-                historyItem.appendChild(copyButton);
-                historyItem.appendChild(deleteButton);
-                historyList.appendChild(historyItem);
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Delete';
+            deleteButton.style.backgroundColor = '#e74c3c';
+            deleteButton.addEventListener('click', () => {
+                historyData.splice(index, 1);
+                localStorage.setItem('transcriptionHistory', JSON.stringify(historyData));
+                renderHistoryItems(historyData);
             });
-        }
 
-        clearHistoryBtn.addEventListener('click', () => {
-            historyData = [];
-            localStorage.setItem('transcriptionHistory', JSON.stringify(historyData));
-            renderHistoryItems(historyData);
+            historyItem.appendChild(document.createElement('br'));
+            historyItem.appendChild(copyButton);
+            historyItem.appendChild(deleteButton);
+            historyList.appendChild(historyItem);
         });
+    }
 
-        historySearch.addEventListener('input', () => {
-            const searchTerm = historySearch.value.toLowerCase();
-            const filtered = historyData.filter(item => item.toLowerCase().includes(searchTerm));
-            renderHistoryItems(filtered);
-        });
+    clearHistoryBtn.addEventListener('click', () => {
+        historyData = [];
+        localStorage.setItem('transcriptionHistory', JSON.stringify(historyData));
+        renderHistoryItems(historyData);
+    });
 
-        // Update settings on change
-        languageSelect.addEventListener('change', () => {
-            currentLanguage = languageSelect.value;
-        });
-        interimCheckbox.addEventListener('change', () => {
-            useInterim = interimCheckbox.checked;
-        });
-        continuousCheckbox.addEventListener('change', () => {
-            useContinuous = continuousCheckbox.checked;
-        });
+    historySearch.addEventListener('input', () => {
+        const searchTerm = historySearch.value.toLowerCase();
+        const filtered = historyData.filter(item => item.toLowerCase().includes(searchTerm));
+        renderHistoryItems(filtered);
+    });
+
+    // Update settings on change
+    languageSelect.addEventListener('change', () => {
+        currentLanguage = languageSelect.value;
+    });
+    interimCheckbox.addEventListener('change', () => {
+        useInterim = interimCheckbox.checked;
+    });
+    continuousCheckbox.addEventListener('change', () => {
+        useContinuous = continuousCheckbox.checked;
+    });
     </script>
 </body>
 </html>
