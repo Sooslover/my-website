@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/> 
-    <title>Combined Page: Prompt Generator & Enhanced Speech to Text</title>
+    <title>Prompt & Speech Assistant</title>
     <style>
-        /* ============ BASE STYLES (FROM ENHANCED SPEECH-TO-TEXT) ============ */
-
+        /* Professional styling improvements */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
@@ -16,30 +15,40 @@
             height: 100%;
             margin: 0;
             padding: 20px;
-            background: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);
+            background-color: #f8f9fa;
             color: #333;
             transition: background-color 0.3s, color 0.3s;
+            line-height: 1.6;
         }
 
         h1, h3 {
             color: #2c3e50;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             text-align: center;
+            font-weight: 600;
         }
 
         h1 {
             margin-top: 20px;
-            font-size: 2.5rem;
+            font-size: 2.2rem;
+            letter-spacing: -0.5px;
+        }
+        
+        h3 {
+            font-size: 1.3rem;
+            color: #34495e;
         }
 
         button, select, input[type="checkbox"] {
             padding: 10px 20px;
             margin: 5px 5px 5px 0;
             border: none;
-            border-radius: 5px;
+            border-radius: 4px;
             cursor: pointer;
-            font-size: 1rem;
-            transition: background-color 0.3s;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         button {
@@ -49,49 +58,193 @@
 
         button:hover {
             background-color: #2980b9;
+            transform: translateY(-1px);
+            box-shadow: 0 3px 5px rgba(0,0,0,0.15);
+        }
+        
+        button:active {
+            transform: translateY(1px);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        select {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            color: #333;
+            padding: 9px 15px;
+        }
+        
+        select:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.25);
         }
 
         #toggle-theme-btn {
             position: fixed;
-            top: 10px;
-            right: 10px;
+            top: 15px;
+            right: 15px;
             background-color: #555;
             color: white;
-            padding: 10px;
-            border-radius: 5px;
+            padding: 8px 12px;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
         }
-
-        #output {
-            width: 80%;
-            max-width: 800px;
-            height: 200px;
+        
+        #quick-guide {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        #guide-content {
+            text-align: left;
+            border-left: 3px solid #3498db;
+            padding-left: 15px;
+        }
+        
+        #guide-content p {
+            margin: 8px 0;
+        }
+        
+        #guide-content kbd {
+            background-color: #f1f1f1;
             border: 1px solid #ccc;
-            margin-top: 20px;
-            padding: 10px;
-            font-size: 16px;
-            overflow-y: auto;
-            background: white;
-            border-radius: 5px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s, color 0.3s;
+            border-radius: 3px;
+            box-shadow: 0 1px 1px rgba(0,0,0,.2);
+            color: #333;
+            display: inline-block;
+            font-size: 0.85rem;
+            font-weight: 700;
+            line-height: 1;
+            padding: 3px 6px;
+            white-space: nowrap;
         }
 
+        /* Improved layout */
+        #two-column-layout {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        #left-column, #right-column {
+            flex: 1;
+            min-width: 300px;
+            max-width: calc(50% - 12.5px);
+            transition: all 0.3s ease;
+        }
+        
+        /* Card-like designs */
+        #promptContainer, #output, #timer, #settings-panel, #history-list li {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border-radius: 8px;
+            border: 1px solid rgba(0,0,0,0.05);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        #promptContainer:hover, #output:hover {
+            box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+        }
+        
+        /* Controls styling */
         #controls {
             display: flex;
             flex-wrap: wrap;
+            justify-content: space-between;
+            margin: 0 0 15px 0;
+            gap: 8px;
+        }
+        
+        #controls button {
+            flex: 1;
+            min-width: 80px;
+            max-width: 150px;
+            padding: 10px 16px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
             justify-content: center;
-            margin: 10px 0;
-            gap: 10px;
+            gap: 6px;
+            border-radius: 6px;
+        }
+        
+        /* Button variations */
+        #start-btn {
+            background-color: #27ae60;
+        }
+        #start-btn:hover {
+            background-color: #219653;
+        }
+        
+        #stop-btn {
+            background-color: #e74c3c;
+        }
+        #stop-btn:hover {
+            background-color: #c0392b;
+        }
+        
+        #pause-resume-btn {
+            background-color: #f39c12;
+        }
+        #pause-resume-btn:hover {
+            background-color: #d35400;
+        }
+        
+        #tts-btn {
+            background-color: #9b59b6;
+        }
+        #tts-btn:hover {
+            background-color: #8e44ad;
+        }
+        
+        /* Disabled state */
+        button:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+            opacity: 0.7;
+            transform: none;
+            box-shadow: none;
+        }
+
+        #output {
+            width: 100%;
+            height: 250px;
+            margin-top: 15px;
+            padding: 16px;
+            font-size: 16px;
+            line-height: 1.6;
+            overflow-y: auto;
+            background: white;
+            transition: background-color 0.3s, color 0.3s;
+            border: none;
         }
 
         #timer {
-            font-size: 1.2rem;
-            margin-top: 20px;
-            background: #ecf0f1;
-            padding: 10px;
-            border-radius: 5px;
+            font-size: 1.1rem;
+            margin-top: 15px;
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
             transition: background-color 0.3s, color 0.3s;
             text-align: center;
+            font-weight: 500;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        #timer::before {
+            content: "⏱";
+            font-size: 1.2rem;
         }
 
         #status-indicator {
@@ -99,17 +252,22 @@
             color: #e74c3c;
             font-weight: bold;
             margin-top: 10px;
+            padding: 8px 12px;
+            background-color: rgba(231, 76, 60, 0.1);
+            border-radius: 20px;
+            text-align: center;
+            width: fit-content;
+            margin: 10px auto;
         }
 
         #status-indicator.active {
             display: block;
-            animation: blink 1s infinite;
-            text-align: center;
+            animation: pulse 1.5s infinite;
         }
 
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.05); }
         }
 
         .popup {
@@ -117,238 +275,429 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            padding: 20px;
-            background-color: rgba(0, 0, 0, 0.8);
+            padding: 15px 25px;
+            background-color: rgba(0, 0, 0, 0.85);
             color: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
             font-size: 1rem;
+            font-weight: 500;
             opacity: 0;
             animation: fadeInOut 2s forwards;
+            z-index: 1000;
+            text-align: center;
         }
 
         @keyframes fadeInOut {
-            0% { opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { opacity: 0; }
+            0% { opacity: 0; transform: translate(-50%, -40%); }
+            15% { opacity: 1; transform: translate(-50%, -50%); }
+            85% { opacity: 1; transform: translate(-50%, -50%); }
+            100% { opacity: 0; transform: translate(-50%, -60%); }
         }
 
-        #word-count, #history, #settings-panel {
+        #word-count {
+            margin-top: 15px;
+            font-size: 0.95rem;
+            color: #7f8c8d;
+            text-align: right;
+            padding: 0 5px;
+        }
+
+        /* Prompt container styling */
+        #promptContainer {
+            background-color: #ffffff;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            height: calc(100% - 40px);
+        }
+        
+        #promptContainer h2 {
+            font-size: 1.5rem;
+            margin-top: 0;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #2c3e50;
+            position: relative;
+            padding-bottom: 12px;
+        }
+        
+        #promptContainer h2::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background-color: #3498db;
+            border-radius: 3px;
+        }
+        
+        #promptContainer .section {
+            margin-bottom: 16px;
+        }
+        
+        #promptContainer label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 0.95rem;
+            color: #34495e;
+        }
+        
+        #promptContainer textarea, 
+        #promptContainer select {
+            width: 100%;
+            box-sizing: border-box;
+            font-family: inherit;
+            font-size: 14px;
+            padding: 10px 12px;
+            resize: vertical;
+            border: 1px solid #e1e1e1;
+            border-radius: 6px;
+            background-color: #f9f9f9;
+            transition: all 0.3s;
+            min-height: 38px;
+        }
+        
+        #promptContainer textarea:focus,
+        #promptContainer select:focus {
+            outline: none;
+            border-color: #3498db;
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
+        }
+        
+        #promptContainer select {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23131313%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px top 50%;
+            background-size: 12px auto;
+            padding-right: 30px;
+        }
+        
+        #promptContainer .button-container {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin-top: auto;
+            padding-top: 15px;
+        }
+        
+        #promptContainer .button-container button {
+            flex: 1;
+            padding: 10px 16px;
+            font-weight: 600;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+            transition: all 0.2s;
+            min-width: 100px;
+            border-radius: 6px;
+        }
+        
+        #generateBtn {
+            background-color: #2ecc71;
+        }
+        
+        #generateBtn:hover {
+            background-color: #27ae60;
+        }
+        
+        #clearBtn {
+            background-color: #e74c3c;
+        }
+        
+        #clearBtn:hover {
+            background-color: #c0392b;
+        }
+        
+        #promptContainer textarea#finalPrompt {
+            margin-top: 12px;
+            min-height: 100px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            background-color: #f8f9fa;
+            border: 1px solid #e1e1e1;
+            padding: 12px;
+            line-height: 1.5;
+            color: #2c3e50;
+        }
+        
+        #promptContainer #copySuccess {
+            display: none;
+            margin-top: 8px;
+            color: #27ae60;
+            font-weight: 600;
+            text-align: center;
+            padding: 6px;
+            background-color: rgba(46, 204, 113, 0.1);
+            border-radius: 4px;
+        }
+
+        #settings-panel, #history {
+            padding: 16px;
+            background: white;
             margin-top: 20px;
-            width: 80%;
-            max-width: 800px;
+            border-radius: 8px;
         }
-
-        #history {
-            margin-bottom: 30px;
+        
+        #settings-panel h3, #history h3 {
+            margin-top: 0;
+            margin-bottom: 16px;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            font-size: 1.2rem;
+        }
+        
+        #settings-panel h3::before {
+            content: "⚙️";
+            margin-right: 8px;
+            font-size: 1.2rem;
+        }
+        
+        #history h3::before {
+            content: "📜";
+            margin-right: 8px;
+            font-size: 1.2rem;
         }
 
         #history-list {
             list-style-type: none;
             padding: 0;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 15px;
         }
 
         #history-list li {
             margin-bottom: 10px;
-            background: #fff;
-            padding: 10px;
-            border-radius: 5px;
+            background: #f8f9fa;
+            padding: 12px;
             position: relative;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            transition: all 0.2s;
+        }
+        
+        #history-list li:hover {
+            background: #f1f1f1;
         }
 
         #history-list li button {
-            margin: 5px;
+            margin: 5px 2px;
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            background-color: transparent;
+            color: #3498db;
+            border: 1px solid #3498db;
+            box-shadow: none;
+        }
+        
+        #history-list li button:hover {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        #history-list li button:last-child {
+            color: #e74c3c;
+            border-color: #e74c3c;
+        }
+        
+        #history-list li button:last-child:hover {
+            background-color: #e74c3c;
+            color: white;
         }
 
         #history-search {
-            margin-bottom: 10px;
-            width: 50%;
-            padding: 5px;
+            width: 70%;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            background-color: #f8f9fa;
+            transition: all 0.3s;
         }
-
-        #settings-panel {
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background: #f7f7f7;
+        
+        #history-search:focus {
+            outline: none;
+            border-color: #3498db;
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
         }
-
-        #settings-panel h3 {
-            margin-top: 0;
+        
+        #clear-history-btn {
+            background-color: #e74c3c;
+            color: white;
+            padding: 8px 15px;
+            font-size: 0.9rem;
         }
-
+        
+        /* Settings styling */
         #settings-panel label {
-            display: block;
-            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+            cursor: pointer;
         }
-
-        #settings-panel select, #settings-panel input[type="checkbox"] {
+        
+        #settings-panel input[type="checkbox"] {
             margin-right: 10px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
         }
-
-        /* =============== NEW LAYOUT FOR TWO SECTIONS SIDE-BY-SIDE =============== */
-        #two-column-layout {
-            display: flex;
-            flex-wrap: wrap; /* allows wrapping on smaller screens */
-            gap: 20px;
+        
+        #language-select {
+            padding: 8px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            background-color: #f8f9fa;
+            margin-bottom: 15px;
             width: 100%;
-            max-width: 1300px; /* adjust as desired */
+            max-width: 200px;
         }
 
-        #left-column, #right-column {
-            flex: 1;
-            min-width: 300px; /* ensures columns don’t collapse too small */
-        }
-
-        /* =============== PROMPT GENERATOR SPECIFIC STYLES =============== */
-        #promptContainer {
-            background-color: #ffffff;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            padding: 15px;
-        }
-        #promptContainer h2 {
-            font-size: 1.4rem;
-            margin-top: 0;
-            text-align: center;
-            color: #2c3e50;
-        }
-        #promptContainer .section {
-            margin-bottom: 8px;
-        }
-        #promptContainer label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 4px;
-        }
-        #promptContainer textarea {
-            width: 100%;
-            box-sizing: border-box;
-            font-family: inherit;
-            font-size: 14px;
-            padding: 4px;
-            resize: vertical;
-        }
-        #promptContainer .button-container {
-            margin-top: 10px;
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        #promptContainer textarea#finalPrompt {
-            margin-top: 8px;
-            height: 80px;
-        }
-        #promptContainer #copySuccess {
-            display: none;
-            margin-top: 8px;
-            color: #0b730b;
-            font-weight: bold;
-        }
-
-        /* =============== DARK MODE STYLES =============== */
+        /* Dark mode improvements */
         .dark-mode {
-            background: #2c3e50;
-            color: #ecf0f1;
+            background: #1a202c;
+            color: #e2e8f0;
         }
 
         .dark-mode h1, 
         .dark-mode h3, 
         .dark-mode p, 
-        .dark-mode label,
-        .dark-mode #word-count,
-        .dark-mode #status-indicator {
-            color: #ecf0f1;
+        .dark-mode label {
+            color: #e2e8f0;
+        }
+        
+        .dark-mode #promptContainer h2,
+        .dark-mode #promptContainer label {
+            color: #e2e8f0;
+        }
+        
+        .dark-mode #promptContainer h2::after {
+            background-color: #3498db;
         }
 
-        .dark-mode #output {
-            background: #34495e;
-            color: #ecf0f1;
-            border: 1px solid #2c3e50;
+        .dark-mode #output,
+        .dark-mode #promptContainer,
+        .dark-mode #settings-panel,
+        .dark-mode #history {
+            background: #2d3748;
+            color: #e2e8f0;
+            border-color: #4a5568;
+        }
+        
+        .dark-mode #promptContainer textarea,
+        .dark-mode #promptContainer select,
+        .dark-mode #history-search,
+        .dark-mode #language-select {
+            background-color: #4a5568;
+            color: #e2e8f0;
+            border-color: #2d3748;
+        }
+        
+        .dark-mode #promptContainer textarea::placeholder,
+        .dark-mode #history-search::placeholder {
+            color: #a0aec0;
+        }
+        
+        .dark-mode #promptContainer textarea#finalPrompt {
+            background-color: #4a5568;
+            border-color: #2d3748;
+            color: #e2e8f0;
         }
 
         .dark-mode #timer {
-            background: #34495e;
-            color: #ecf0f1;
-            border: none;
+            background: #2d3748;
+            color: #e2e8f0;
         }
-
-        .dark-mode button {
-            background-color: #2980b9;
-            color: #ecf0f1;
-        }
-
-        .dark-mode #settings-panel {
-            background: #34495e;
-            color: #ecf0f1;
-            border: 1px solid #2c3e50;
-        }
-
-        .dark-mode #history {
-            color: #ecf0f1;
+        
+        .dark-mode #word-count {
+            color: #a0aec0;
         }
 
         .dark-mode #history-list li {
-            background: #3b4b5a;
-            color: #ecf0f1;
-            border: 1px solid #2c3e50;
+            background: #4a5568;
+            color: #e2e8f0;
+            border-color: #2d3748;
         }
-
-        .dark-mode input[type="text"], 
-        .dark-mode select,
-        .dark-mode input[type="checkbox"] {
-            background: #3b4b5a;
-            color: #ecf0f1;
-            border: 1px solid #2c3e50;
+        
+        .dark-mode #history-list li:hover {
+            background: #3a4257;
+        }
+        
+        .dark-mode #history-list li button {
+            background-color: transparent;
+            color: #63b3ed;
+            border-color: #63b3ed;
+        }
+        
+        .dark-mode #history-list li button:hover {
+            background-color: #4299e1;
+            color: #e2e8f0;
+        }
+        
+        .dark-mode #history-list li button:last-child {
+            color: #fc8181;
+            border-color: #fc8181;
+        }
+        
+        .dark-mode #history-list li button:last-child:hover {
+            background-color: #f56565;
+            color: #e2e8f0;
+        }
+        
+        .dark-mode #toggle-theme-btn {
+            background-color: #718096;
         }
 
         .dark-mode .popup {
-            background-color: rgba(255, 255, 255, 0.1);
-            color: #ecf0f1;
-            border: 1px solid #ecf0f1;
+            background-color: rgba(255, 255, 255, 0.15);
+            color: #e2e8f0;
         }
-
-        /* =============== SPECIFIC DARK MODE RULES FOR THE PROMPT CONTAINER =============== */
-        .dark-mode #promptContainer {
-            background: #34495e;    /* Darken background to match your dark theme */
-            color: #ecf0f1;         /* Light text color */
-            border: 1px solid #2c3e50;
+        
+        .dark-mode #promptContainer #copySuccess {
+            color: #68d391;
+            background-color: rgba(104, 211, 145, 0.1);
         }
-
-        .dark-mode #promptContainer h2,
-        .dark-mode #promptContainer label {
-            color: #ecf0f1;
+        
+        .dark-mode #guide-content {
+            border-left-color: #4299e1;
         }
-
-        .dark-mode #promptContainer textarea {
-            background: #3b4b5a;    /* A slightly lighter dark gray for the textarea */
-            color: #ecf0f1;         /* Light text */
-            border: 1px solid #2c3e50;
+        
+        .dark-mode #guide-content kbd {
+            background-color: #4a5568;
+            border-color: #2d3748;
+            color: #e2e8f0;
+            box-shadow: 0 1px 1px rgba(0,0,0,.4);
         }
-
-        .dark-mode #promptContainer textarea::placeholder {
-            color: #bbb;            /* Placeholder text color */
+        
+        /* Animation for theme transition */
+        body, #output, #promptContainer, #settings-panel, #history, 
+        #timer, .dark-mode #output, .dark-mode #promptContainer, 
+        .dark-mode #settings-panel, .dark-mode #history, .dark-mode #timer {
+            transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease;
         }
-
-        /* Responsive Styles */
-        @media (max-width: 600px) {
+        
+        /* Adjust for mobile */
+        @media (max-width: 768px) {
+            #left-column, #right-column {
+                max-width: 100%;
+            }
+            
             h1 {
                 font-size: 1.8rem;
             }
-
-            button, select, input[type="checkbox"] {
-                font-size: 0.9rem;
-                padding: 8px 10px;
-            }
-
-            #output {
-                height: 150px;
-                font-size: 14px;
-            }
-
-            #history-search {
-                width: 80%;
+            
+            #controls button {
+                font-size: 0.85rem;
+                padding: 8px 12px;
             }
         }
     </style>
@@ -356,11 +705,29 @@
 <body>
     <!-- Include jsPDF from CDN for PDF generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
+    <!-- Add Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- THEME TOGGLE BUTTON -->
-    <button id="toggle-theme-btn">Toggle Theme</button>
+    <button id="toggle-theme-btn"><i class="fas fa-moon"></i></button>
 
-    <h1 id="main-heading">Enhanced Speech to Text Converter</h1>
+    <h1 id="main-heading">Prompt & Speech Assistant</h1>
+    
+    <!-- Quick guide -->
+    <div id="quick-guide">
+        <span id="toggle-guide" style="cursor:pointer; text-decoration:underline; color:#3498db; font-size:0.9rem;">How to use</span>
+        <div id="guide-content" style="display:none; margin-top:10px; padding:15px; background:#f8f9fa; border-radius:8px; max-width:800px; font-size:0.95rem;">
+            <p><strong>Left Panel:</strong> Create structured AI prompts by filling in the template fields.</p>
+            <p><strong>Right Panel:</strong> Convert your speech to text in real-time, edit, and save the results.</p>
+            <p><strong>Keyboard Shortcuts:</strong> 
+                <kbd>Ctrl+B</kbd> Start/Stop Recording | 
+                <kbd>Ctrl+P</kbd> Pause/Resume | 
+                <kbd>Ctrl+S</kbd> Save Text | 
+                <kbd>Ctrl+G</kbd> Generate Prompt
+            </p>
+        </div>
+    </div>
 
     <!-- TWO-COLUMN LAYOUT -->
     <div id="two-column-layout">
@@ -370,85 +737,125 @@
             <div id="promptContainer">
                 <h2>Prompt Template Generator</h2>
 
+                <!-- Quick Templates Dropdown -->
+                <div class="section">
+                    <label for="template-select">Quick Templates:</label>
+                    <select id="template-select" style="width: 100%; padding: 10px; border-radius: 6px;">
+                        <option value="">Select a template...</option>
+                        <option value="writing">Creative Writing</option>
+                        <option value="expert">Expert Consultation</option>
+                        <option value="analysis">Data Analysis</option>
+                        <option value="marketing">Marketing Copy</option>
+                        <option value="academic">Academic Writing</option>
+                        <option value="coach">Life Coach</option>
+                        <option value="programmer">Programmer</option>
+                        <option value="summarizer">Content Summarizer</option>
+                        <option value="editor">Text Editor</option>
+                        <option value="storyteller">Storyteller</option>
+                        <option value="custom">Custom Template</option>
+                    </select>
+                </div>
+
                 <!-- 1) "You are a" -->
                 <div class="section">
                     <label for="roleContext">You are a:</label>
-                    <textarea id="roleContext" rows="1" placeholder=""></textarea>
+                    <textarea id="roleContext" rows="1" placeholder="e.g., marketing expert with 10 years experience"></textarea>
                 </div>
 
                 <!-- 2) "Your task is to" -->
                 <div class="section">
                     <label for="objective">Your task is to:</label>
-                    <textarea id="objective" rows="1" placeholder=""></textarea>
+                    <textarea id="objective" rows="1" placeholder="e.g., create engaging social media content for my product"></textarea>
                 </div>
 
                 <!-- 3) "Provide" -->
                 <div class="section">
                     <label for="detailedInstructions">Provide:</label>
-                    <textarea id="detailedInstructions" rows="2" placeholder=""></textarea>
+                    <textarea id="detailedInstructions" rows="2" placeholder="e.g., clear, punchy headlines that drive engagement and incorporate the latest trends"></textarea>
                 </div>
 
                 <!-- 4) Background/Context -->
                 <div class="section">
                     <label for="backgroundContext">Background/Context:</label>
-                    <textarea id="backgroundContext" rows="2" placeholder=""></textarea>
+                    <textarea id="backgroundContext" rows="2" placeholder="e.g., Our product is a sustainable water bottle targeting health-conscious millennials"></textarea>
                 </div>
 
                 <!-- 5) "Present your answer" -->
                 <div class="section">
                     <label for="outputFormat">Present your answer:</label>
-                    <textarea id="outputFormat" rows="1" placeholder=""></textarea>
+                    <textarea id="outputFormat" rows="1" placeholder="e.g., in a numbered list with 5 options, including rationale for each"></textarea>
                 </div>
 
                 <!-- Buttons and output -->
                 <div class="button-container">
-                    <button id="generateBtn" onclick="generateAndCopyPrompt()">Generate and Copy Prompt</button>
-                    <button id="clearBtn" onclick="clearAllFields()">Clear All</button>
+                    <button id="generateBtn"><i class="fas fa-bolt"></i> Generate & Copy</button>
+                    <button id="clearBtn"><i class="fas fa-trash"></i> Clear All</button>
                 </div>
                 <textarea id="finalPrompt" readonly></textarea>
                 <div id="copySuccess">Copied to clipboard!</div>
+                
+                <!-- Speech to Prompt Button -->
+                <div style="margin-top: 15px; text-align: center;">
+                    <button id="speech-to-prompt-btn" style="background-color: #9b59b6; width: 100%;">
+                        <i class="fas fa-magic"></i> Convert Speech to Prompt
+                    </button>
+                </div>
             </div>
         </div>
 
         <!-- RIGHT COLUMN: Enhanced Speech to Text Converter -->
         <div id="right-column">
-            <!-- Controls -->
+            <!-- Controls with icons -->
             <div id="controls">
-                <button id="start-btn">Start Recording</button>
-                <button id="stop-btn" disabled>Stop Recording</button>
-                <button id="pause-resume-btn">Pause</button>
-                <button id="save-btn">Save as TXT</button>
-                <button id="pdf-btn">Export as PDF</button>
-                <button id="tts-btn">Play Text (TTS)</button>
+                <button id="start-btn"><i class="fas fa-microphone"></i> Start</button>
+                <button id="stop-btn" disabled><i class="fas fa-stop"></i> Stop</button>
+                <button id="pause-resume-btn"><i class="fas fa-pause"></i> Pause</button>
+                <button id="save-btn"><i class="fas fa-download"></i> Save</button>
+                <button id="pdf-btn"><i class="fas fa-file-pdf"></i> PDF</button>
+                <button id="tts-btn"><i class="fas fa-volume-up"></i> Play</button>
             </div>
 
             <!-- Output area -->
             <div id="output" contenteditable="true" spellcheck="true"></div>
-            <div id="timer">Timer: 00:00:00</div>
-            <div id="status-indicator">● Listening...</div>
-            <div id="word-count">Word Count: 0</div>
+            <div id="timer">00:00:00</div>
+            <div id="status-indicator">●  Recording</div>
+            <div id="word-count">Words: 0</div>
 
             <!-- Settings panel -->
             <div id="settings-panel">
                 <h3>Settings</h3>
-                <label for="language-select">Language:</label>
-                <select id="language-select">
-                    <option value="en-US">English (US)</option>
-                    <option value="en-GB">English (UK)</option>
-                    <option value="fr-FR">French (FR)</option>
-                    <option value="de-DE">German (DE)</option>
-                    <option value="es-ES">Spanish (ES)</option>
-                </select>
-                <br>
-                <label><input type="checkbox" id="interim-checkbox" /> Use Interim Results</label>
-                <label><input type="checkbox" id="continuous-checkbox" checked/> Continuous Recognition</label>
+                <div>
+                    <label for="language-select">Recognition Language:</label>
+                    <select id="language-select">
+                        <option value="en-US">English (US)</option>
+                        <option value="en-GB">English (UK)</option>
+                        <option value="fr-FR">French (FR)</option>
+                        <option value="de-DE">German (DE)</option>
+                        <option value="es-ES">Spanish (ES)</option>
+                        <option value="it-IT">Italian (IT)</option>
+                        <option value="pt-BR">Portuguese (BR)</option>
+                        <option value="zh-CN">Chinese (Simplified)</option>
+                        <option value="ja-JP">Japanese (JP)</option>
+                        <option value="ko-KR">Korean (KR)</option>
+                        <option value="hi-IN">Hindi (IN)</option>
+                        <option value="ar-SA">Arabic (SA)</option>
+                    </select>
+                </div>
+                
+                <div style="margin-top: 15px;">
+                    <label><input type="checkbox" id="interim-checkbox" /> Show interim results</label>
+                    <label><input type="checkbox" id="continuous-checkbox" checked/> Continuous recognition</label>
+                    <label><input type="checkbox" id="auto-punctuate" checked/> Auto-punctuation</label>
+                </div>
             </div>
 
             <!-- History -->
             <div id="history">
                 <h3>Transcription History</h3>
-                <input type="text" id="history-search" placeholder="Search history..." />
-                <button id="clear-history-btn">Clear History</button>
+                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <input type="text" id="history-search" placeholder="Search history..." />
+                    <button id="clear-history-btn"><i class="fas fa-trash-alt"></i> Clear</button>
+                </div>
                 <ul id="history-list"></ul>
             </div>
         </div>
@@ -457,7 +864,101 @@
     <!-- =============== SCRIPTS =============== -->
     <script>
     /************* PROMPT TEMPLATE GENERATOR LOGIC *************/
-    function generateAndCopyPrompt() {
+    // Templates for quick selection
+    const promptTemplates = {
+        writing: {
+            role: "creative writing expert with experience in fiction, blogs, and marketing copy",
+            task: "craft an engaging piece of content based on my specifications",
+            instructions: "creative, original writing that captures the right tone and style for my target audience",
+            background: "",
+            format: "with attention to structure, readability, and SEO best practices if applicable"
+        },
+        expert: {
+            role: "subject matter expert with deep knowledge in the field",
+            task: "provide detailed, accurate information and advice on the topic I present",
+            instructions: "nuanced analysis that covers different perspectives and addresses potential challenges",
+            background: "",
+            format: "in a clear, concise manner with relevant examples and actionable takeaways"
+        },
+        analysis: {
+            role: "data analyst with expertise in interpreting complex information",
+            task: "analyze the information I provide and extract meaningful insights",
+            instructions: "a thorough examination of patterns, trends, and anomalies in the data",
+            background: "",
+            format: "with visual representations where helpful, and clear explanations of your methodology and conclusions"
+        },
+        marketing: {
+            role: "experienced marketing strategist with expertise in digital campaigns and consumer psychology",
+            task: "create compelling marketing content for my product or service",
+            instructions: "attention-grabbing copy that highlights benefits, addresses pain points, and includes strong calls to action",
+            background: "",
+            format: "with different versions optimized for various platforms (social media, email, website)"
+        },
+        academic: {
+            role: "academic researcher with expertise in scholarly writing and citation standards",
+            task: "help me develop well-structured academic content on my chosen topic",
+            instructions: "thorough, evidence-based analysis that adheres to academic standards and incorporates relevant literature",
+            background: "",
+            format: "following proper academic structure with clear arguments, supporting evidence, and proper citations"
+        },
+        coach: {
+            role: "experienced life coach with a background in psychology and personal development",
+            task: "provide guidance and support for my personal or professional goals",
+            instructions: "actionable advice, thoughtful questions, and perspective-shifting insights that help me overcome obstacles",
+            background: "",
+            format: "in a supportive, encouraging manner that empowers me to take action"
+        },
+        programmer: {
+            role: "senior software developer with expertise in multiple programming languages and best practices",
+            task: "help me solve a programming problem or develop code for my project",
+            instructions: "clean, efficient, and well-documented code that follows best practices",
+            background: "",
+            format: "with explanations of your approach, potential alternatives, and any important considerations"
+        },
+        summarizer: {
+            role: "content specialist with skills in distilling complex information into concise summaries",
+            task: "summarize the content I provide while retaining all key information",
+            instructions: "a clear, concise summary that captures the main points, arguments, and conclusions",
+            background: "",
+            format: "in bullet points for quick scanning as well as a short paragraph form"
+        },
+        editor: {
+            role: "professional editor with expertise in improving clarity, flow, and impact of written content",
+            task: "review and improve the text I provide",
+            instructions: "thoughtful edits that enhance clarity, eliminate errors, improve structure, and strengthen the overall impact",
+            background: "",
+            format: "with both a revised version and explanations of significant changes"
+        },
+        storyteller: {
+            role: "skilled storyteller with knowledge of narrative structure, character development, and engaging dialogue",
+            task: "create an engaging story based on my parameters",
+            instructions: "a compelling narrative with well-developed characters, interesting plot, and appropriate pacing",
+            background: "",
+            format: "in a style that matches my requested genre and target audience"
+        },
+        custom: {
+            role: "",
+            task: "",
+            instructions: "",
+            background: "",
+            format: ""
+        }
+    };
+    
+    // Load template when selected
+    document.getElementById("template-select").addEventListener("change", function() {
+        const templateKey = this.value;
+        if (templateKey && promptTemplates[templateKey]) {
+            const template = promptTemplates[templateKey];
+            document.getElementById("roleContext").value = template.role;
+            document.getElementById("objective").value = template.task;
+            document.getElementById("detailedInstructions").value = template.instructions;
+            document.getElementById("backgroundContext").value = template.background;
+            document.getElementById("outputFormat").value = template.format;
+        }
+    });
+    
+    function generateAndCopyPrompt(copyToClipboard = true) {
       // Retrieve the content of each field
       const roleContext = document.getElementById("roleContext").value.trim();
       const objective = document.getElementById("objective").value.trim();
@@ -491,17 +992,22 @@
       const finalPromptArea = document.getElementById("finalPrompt");
       finalPromptArea.value = finalPromptText;
 
-      // Copy to clipboard
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(finalPromptText)
-          .then(() => showCopySuccess())
-          .catch(err => console.error("Error copying:", err));
-      } else {
-        // Fallback for older browsers
-        finalPromptArea.select();
-        document.execCommand("copy");
-        showCopySuccess();
+      // Copy to clipboard if requested
+      if (copyToClipboard) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(finalPromptText)
+            .then(() => showCopySuccess())
+            .catch(err => console.error("Error copying:", err));
+        } else {
+          // Fallback for older browsers
+          finalPromptArea.select();
+          document.execCommand("copy");
+          showCopySuccess();
+        }
       }
+      
+      // Save to local storage for future use
+      saveCustomTemplate();
     }
 
     // Show a transient "copied" message for one second
@@ -510,7 +1016,7 @@
       copySuccessDiv.style.display = "block";
       setTimeout(() => {
         copySuccessDiv.style.display = "none";
-      }, 1000);
+      }, 1500);
     }
 
     // Clear all text fields and the final prompt area
@@ -522,6 +1028,21 @@
       document.getElementById("outputFormat").value = "";
       document.getElementById("finalPrompt").value = "";
       document.getElementById("copySuccess").style.display = "none";
+    }
+    
+    // Save the custom template
+    function saveCustomTemplate() {
+      const template = {
+        role: document.getElementById("roleContext").value.trim(),
+        task: document.getElementById("objective").value.trim(),
+        instructions: document.getElementById("detailedInstructions").value.trim(),
+        background: document.getElementById("backgroundContext").value.trim(),
+        format: document.getElementById("outputFormat").value.trim()
+      };
+      
+      if (template.role || template.task || template.instructions || template.background || template.format) {
+        localStorage.setItem('customPromptTemplate', JSON.stringify(template));
+      }
     }
 
     /************* ENHANCED SPEECH-TO-TEXT CONVERTER LOGIC *************/
@@ -540,10 +1061,13 @@
     const historySearch = document.getElementById('history-search');
     const toggleThemeBtn = document.getElementById('toggle-theme-btn');
     const mainHeading = document.getElementById('main-heading');
+    const generateBtn = document.getElementById('generateBtn');
+    const clearBtn = document.getElementById('clearBtn');
 
     const languageSelect = document.getElementById('language-select');
     const interimCheckbox = document.getElementById('interim-checkbox');
     const continuousCheckbox = document.getElementById('continuous-checkbox');
+    const autoPunctuateCheckbox = document.getElementById('auto-punctuate');
 
     let timerInterval;
     let startTime;
@@ -552,11 +1076,122 @@
     let currentLanguage = languageSelect.value;
     let useInterim = interimCheckbox.checked;
     let useContinuous = continuousCheckbox.checked;
+    let autoPunctuate = autoPunctuateCheckbox.checked;
     let darkMode = false;
+
+    // Add event listeners for prompt generator buttons
+    generateBtn.addEventListener('click', function() { generateAndCopyPrompt(true); });
+    clearBtn.addEventListener('click', clearAllFields);
+    
+    // Add Speech to Prompt functionality
+    document.getElementById('speech-to-prompt-btn').addEventListener('click', function() {
+        const transcribedText = output.textContent.trim();
+        if (!transcribedText) {
+            showPopup('No transcription text to convert');
+            return;
+        }
+        
+        // Simple parsing attempt
+        try {
+            // Extract potential role
+            let role = '';
+            if (transcribedText.toLowerCase().includes('as a') || transcribedText.toLowerCase().includes('as an')) {
+                const roleMatch = transcribedText.match(/as (a|an) ([^,\.]+)/i);
+                if (roleMatch && roleMatch[2]) {
+                    role = roleMatch[2].trim();
+                }
+            }
+            
+            // Extract potential task
+            let task = '';
+            if (transcribedText.toLowerCase().includes('i need') || 
+                transcribedText.toLowerCase().includes('i want') ||
+                transcribedText.toLowerCase().includes('please')) {
+                
+                const taskMatch = transcribedText.match(/(i need|i want|please) ([^\.]+)/i);
+                if (taskMatch && taskMatch[2]) {
+                    task = taskMatch[2].trim();
+                }
+            }
+            
+            // Fill in the form
+            if (role) document.getElementById('roleContext').value = role;
+            if (task) document.getElementById('objective').value = task;
+            
+            // Put the full text in the background/context
+            document.getElementById('backgroundContext').value = transcribedText;
+            
+            // Generate the prompt (without copying to clipboard)
+            generateAndCopyPrompt(false);
+            
+            // Show popup
+            showPopup('Speech converted to prompt!');
+            
+        } catch (error) {
+            console.error('Error parsing transcription:', error);
+            // Still put the text in the background context
+            document.getElementById('backgroundContext').value = transcribedText;
+            generateAndCopyPrompt(false);
+        }
+    });
+    
+    // Load saved custom template if exists
+    const savedCustomTemplate = localStorage.getItem('customPromptTemplate');
+    if (savedCustomTemplate) {
+        const template = JSON.parse(savedCustomTemplate);
+        document.getElementById("roleContext").value = template.role || '';
+        document.getElementById("objective").value = template.task || '';
+        document.getElementById("detailedInstructions").value = template.instructions || '';
+        document.getElementById("backgroundContext").value = template.background || '';
+        document.getElementById("outputFormat").value = template.format || '';
+    }
+    
+    // Load custom template into the dropdown
+    if (savedCustomTemplate) {
+        promptTemplates.custom = JSON.parse(savedCustomTemplate);
+    }
 
     // Load history from local storage
     let historyData = JSON.parse(localStorage.getItem('transcriptionHistory')) || [];
     renderHistoryItems(historyData);
+    
+    // Toggle quick guide
+    document.getElementById('toggle-guide').addEventListener('click', () => {
+        const guideContent = document.getElementById('guide-content');
+        guideContent.style.display = guideContent.style.display === 'none' ? 'block' : 'none';
+    });
+    
+    // Add keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+        // Ctrl+B to start/stop recording
+        if (e.ctrlKey && e.key === 'b') {
+            e.preventDefault();
+            if (stopBtn.disabled) {
+                startRecognition();
+            } else {
+                stopRecognition();
+            }
+        }
+        // Ctrl+P to pause/resume
+        if (e.ctrlKey && e.key === 'p') {
+            e.preventDefault();
+            if (isPaused) {
+                resumeRecognition();
+            } else {
+                pauseRecognition();
+            }
+        }
+        // Ctrl+S to save text
+        if (e.ctrlKey && e.key === 's') {
+            e.preventDefault();
+            saveBtn.click();
+        }
+        // Ctrl+G to generate prompt
+        if (e.ctrlKey && e.key === 'g') {
+            e.preventDefault();
+            generateBtn.click();
+        }
+    });
 
     function startTimer() {
         startTime = new Date();
@@ -565,7 +1200,7 @@
             const hours = String(elapsedTime.getUTCHours()).padStart(2, '0');
             const minutes = String(elapsedTime.getUTCMinutes()).padStart(2, '0');
             const seconds = String(elapsedTime.getUTCSeconds()).padStart(2, '0');
-            timerDisplay.textContent = `Timer: ${hours}:${minutes}:${seconds}`;
+            timerDisplay.textContent = `${hours}:${minutes}:${seconds}`;
         }, 1000);
     }
 
@@ -575,7 +1210,23 @@
 
     function updateWordCount() {
         const wordCount = speechBuffer.trim().split(/\s+/).filter(word => word).length;
-        wordCountDisplay.textContent = `Word Count: ${wordCount}`;
+        wordCountDisplay.textContent = `Words: ${wordCount}`;
+    }
+    
+    function applyAutoPunctuation(text) {
+        if (!autoPunctuateCheckbox.checked) return text;
+        
+        // Basic sentence capitalization
+        text = text.replace(/(?:^|[.!?]\s+)([a-z])/g, (m, p1) => {
+            return m.replace(p1, p1.toUpperCase());
+        });
+        
+        // Add periods at natural pauses if missing
+        text = text.replace(/\b(okay|well|so|anyway|now|then|um|uh)\s+(?=[A-Z])/gi, (m) => {
+            return m.trim() + '. ';
+        });
+        
+        return text;
     }
 
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -598,32 +1249,53 @@
         recognition.onresult = function(event) {
             for (let i = event.resultIndex; i < event.results.length; ++i) {
                 let transcript = event.results[i][0].transcript;
+                
+                // Apply auto-punctuation if enabled
                 if (event.results[i].isFinal) {
-                    transcript = transcript.replace(/\./g, '');
+                    if (autoPunctuateCheckbox.checked) {
+                        transcript = applyAutoPunctuation(transcript);
+                    } else {
+                        transcript = transcript.replace(/\./g, '');
+                    }
+                    
                     speechBuffer += transcript + ' ';
                     output.textContent = speechBuffer;
                     updateWordCount();
+                    
+                    // Auto-scroll to bottom
+                    output.scrollTop = output.scrollHeight;
                 } else if (useInterim) {
                     let interimText = speechBuffer + transcript;
                     output.textContent = interimText;
                 }
             }
 
-            // Simple voice commands
+            // Voice commands
             const command = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
-            if (command === 'start') {
+            
+            if (command === 'start' || command === 'begin recording') {
                 startRecognition();
-            } else if (command === 'stop') {
+            } else if (command === 'stop' || command === 'end recording') {
                 stopRecognition();
             } else if (command === 'pause') {
                 pauseRecognition();
             } else if (command === 'resume') {
                 resumeRecognition();
+            } else if (command === 'save') {
+                saveBtn.click();
+            } else if (command === 'clear') {
+                output.textContent = '';
+                speechBuffer = '';
+                updateWordCount();
             }
         };
 
         recognition.onerror = function(event) {
             console.error('Error occurred in recognition:', event.error);
+            // If browser doesn't support the API, show a message
+            if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+                output.textContent = "Microphone access denied or Speech Recognition not available in this browser. For full functionality, try Chrome, Edge, or Safari.";
+            }
         };
 
         recognition.onend = function() {
@@ -633,17 +1305,28 @@
                 }
             } else {
                 stopTimer();
-                copyToClipboard(output.innerText, 'Text copied to clipboard!');
+                
+                // Try to copy to clipboard
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(output.innerText)
+                        .then(() => showPopup('Text copied to clipboard!'))
+                        .catch(err => console.error('Could not copy text: ', err));
+                }
+                
                 addHistoryItem(speechBuffer.trim());
             }
             statusIndicator.classList.remove('active');
         };
     } else {
         console.error('Web Speech API is not supported in this browser.');
+        output.textContent = "Speech Recognition is not supported in this browser. For full functionality, try Chrome, Edge, or Safari.";
     }
 
     function startRecognition() {
-        if (!recognition) return;
+        if (!recognition) {
+            output.textContent = "Speech Recognition is not supported in this browser. For full functionality, try Chrome, Edge, or Safari.";
+            return;
+        }
         stopBtn.disabled = false;
         if (!isPaused) {
             output.textContent = '';
@@ -652,7 +1335,13 @@
         recognition.lang = currentLanguage;
         recognition.interimResults = useInterim;
         recognition.continuous = useContinuous;
-        recognition.start();
+        try {
+            recognition.start();
+            pauseResumeBtn.innerHTML = '<i class="fas fa-pause"></i> Pause';
+        } catch (error) {
+            console.error('Error starting recognition:', error);
+            output.textContent = "Error starting Speech Recognition. Make sure you've granted microphone permissions.";
+        }
     }
 
     function stopRecognition() {
@@ -666,7 +1355,7 @@
         if (!recognition) return;
         recognition.stop();
         isPaused = true;
-        pauseResumeBtn.textContent = 'Resume';
+        pauseResumeBtn.innerHTML = '<i class="fas fa-play"></i> Resume';
         statusIndicator.classList.remove('active');
     }
 
@@ -674,7 +1363,7 @@
         if (!recognition) return;
         recognition.start();
         isPaused = false;
-        pauseResumeBtn.textContent = 'Pause';
+        pauseResumeBtn.innerHTML = '<i class="fas fa-pause"></i> Pause';
         statusIndicator.classList.add('active');
     }
 
@@ -695,37 +1384,68 @@
         link.href = URL.createObjectURL(blob);
         link.download = 'transcription.txt';
         link.click();
+        showPopup('Saved as text file');
     });
 
     pdfBtn.addEventListener('click', () => {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        const text = output.innerText;
-        const lines = doc.splitTextToSize(text, 180);
-        doc.text(lines, 10, 10);
-        doc.save('transcription.pdf');
+        try {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const text = output.innerText;
+            const lines = doc.splitTextToSize(text, 180);
+            doc.text(lines, 10, 10);
+            doc.save('transcription.pdf');
+            showPopup('Saved as PDF');
+        } catch (error) {
+            console.error('Error generating PDF:', error);
+            showPopup('Error generating PDF. Make sure the jsPDF library is loaded correctly.');
+        }
     });
 
     ttsBtn.addEventListener('click', () => {
-        const utterance = new SpeechSynthesisUtterance(output.innerText);
-        speechSynthesis.speak(utterance);
+        if ('speechSynthesis' in window) {
+            const utterance = new SpeechSynthesisUtterance(output.innerText);
+            speechSynthesis.speak(utterance);
+            showPopup('Playing audio...');
+        } else {
+            showPopup('Text-to-speech is not supported in this browser.');
+        }
     });
 
     toggleThemeBtn.addEventListener('click', () => {
         darkMode = !darkMode;
         if (darkMode) {
             document.body.classList.add('dark-mode');
+            toggleThemeBtn.innerHTML = '<i class="fas fa-sun"></i>';
         } else {
             document.body.classList.remove('dark-mode');
+            toggleThemeBtn.innerHTML = '<i class="fas fa-moon"></i>';
         }
     });
 
     function copyToClipboard(text, message) {
-        navigator.clipboard.writeText(text).then(() => {
-            showPopup(message);
-        }).catch(err => {
-            console.error('Could not copy text: ', err);
-        });
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(() => {
+                showPopup(message);
+            }).catch(err => {
+                console.error('Could not copy text: ', err);
+                showPopup('Failed to copy to clipboard.');
+            });
+        } else {
+            // Fallback method
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showPopup(message);
+            } catch (err) {
+                console.error('Could not copy text: ', err);
+                showPopup('Failed to copy to clipboard.');
+            }
+            document.body.removeChild(textarea);
+        }
     }
 
     function showPopup(text) {
@@ -747,19 +1467,33 @@
 
     function renderHistoryItems(data) {
         historyList.innerHTML = '';
+        if (data.length === 0) {
+            historyList.innerHTML = '<li style="text-align:center; font-style:italic; background:none; box-shadow:none;">No history items yet</li>';
+            return;
+        }
+        
         data.forEach((item, index) => {
             const historyItem = document.createElement('li');
-            historyItem.textContent = item;
+            historyItem.textContent = item.length > 100 ? item.substring(0, 100) + '...' : item;
             
             const copyButton = document.createElement('button');
-            copyButton.textContent = 'Copy';
+            copyButton.innerHTML = '<i class="fas fa-copy"></i> Copy';
             copyButton.addEventListener('click', () => {
-                copyToClipboard(item, 'History text copied!');
+                copyToClipboard(item, 'History item copied!');
+            });
+
+            const useButton = document.createElement('button');
+            useButton.innerHTML = '<i class="fas fa-file-import"></i> Use';
+            useButton.addEventListener('click', () => {
+                output.textContent = item;
+                speechBuffer = item;
+                updateWordCount();
+                showPopup('History item loaded');
             });
 
             const deleteButton = document.createElement('button');
-            deleteButton.textContent = 'Delete';
-            deleteButton.style.backgroundColor = '#e74c3c';
+            deleteButton.innerHTML = '<i class="fas fa-trash"></i>';
+            deleteButton.style.backgroundColor = 'transparent';
             deleteButton.addEventListener('click', () => {
                 historyData.splice(index, 1);
                 localStorage.setItem('transcriptionHistory', JSON.stringify(historyData));
@@ -767,16 +1501,25 @@
             });
 
             historyItem.appendChild(document.createElement('br'));
-            historyItem.appendChild(copyButton);
-            historyItem.appendChild(deleteButton);
+            const buttonContainer = document.createElement('div');
+            buttonContainer.style.display = 'flex';
+            buttonContainer.style.gap = '5px';
+            buttonContainer.style.marginTop = '8px';
+            buttonContainer.appendChild(copyButton);
+            buttonContainer.appendChild(useButton);
+            buttonContainer.appendChild(deleteButton);
+            historyItem.appendChild(buttonContainer);
             historyList.appendChild(historyItem);
         });
     }
 
     clearHistoryBtn.addEventListener('click', () => {
-        historyData = [];
-        localStorage.setItem('transcriptionHistory', JSON.stringify(historyData));
-        renderHistoryItems(historyData);
+        if (confirm('Are you sure you want to clear all history items?')) {
+            historyData = [];
+            localStorage.setItem('transcriptionHistory', JSON.stringify(historyData));
+            renderHistoryItems(historyData);
+            showPopup('History cleared');
+        }
     });
 
     historySearch.addEventListener('input', () => {
@@ -789,11 +1532,17 @@
     languageSelect.addEventListener('change', () => {
         currentLanguage = languageSelect.value;
     });
+    
     interimCheckbox.addEventListener('change', () => {
         useInterim = interimCheckbox.checked;
     });
+    
     continuousCheckbox.addEventListener('change', () => {
         useContinuous = continuousCheckbox.checked;
+    });
+    
+    autoPunctuateCheckbox.addEventListener('change', () => {
+        autoPunctuate = autoPunctuateCheckbox.checked;
     });
     </script>
 </body>
