@@ -361,6 +361,36 @@
             min-height: 38px;
         }
         
+        #template-select {
+            width: 100%;
+            box-sizing: border-box;
+            font-family: inherit;
+            font-size: 14px;
+            padding: 10px 12px;
+            resize: vertical;
+            border: 1px solid #e1e1e1;
+            border-radius: 6px;
+            background-color: #f9f9f9;
+            transition: all 0.3s;
+            min-height: 38px;
+        }
+        
+        #template-select optgroup {
+            font-weight: bold;
+            font-style: normal;
+            color: #2c3e50;
+            background-color: #f1f1f1;
+        }
+        
+        #template-select option {
+            padding: 8px 4px;
+        }
+        
+        .dark-mode #template-select optgroup {
+            background-color: #4a5568;
+            color: #e2e8f0;
+        }
+        
         #promptContainer textarea:focus,
         #promptContainer select:focus {
             outline: none;
@@ -739,20 +769,71 @@
 
                 <!-- Quick Templates Dropdown -->
                 <div class="section">
-                    <label for="template-select">Quick Templates:</label>
+                    <label for="template-select">Academic Templates:</label>
                     <select id="template-select" style="width: 100%; padding: 10px; border-radius: 6px;">
                         <option value="">Select a template...</option>
-                        <option value="writing">Creative Writing</option>
-                        <option value="expert">Expert Consultation</option>
-                        <option value="analysis">Data Analysis</option>
-                        <option value="marketing">Marketing Copy</option>
-                        <option value="academic">Academic Writing</option>
-                        <option value="coach">Life Coach</option>
-                        <option value="programmer">Programmer</option>
-                        <option value="summarizer">Content Summarizer</option>
-                        <option value="editor">Text Editor</option>
-                        <option value="storyteller">Storyteller</option>
-                        <option value="custom">Custom Template</option>
+                        
+                        <!-- Research & Writing Templates -->
+                        <optgroup label="Research & Writing">
+                            <option value="academic">General Academic Writing</option>
+                            <option value="research_proposal">Research Proposal</option>
+                            <option value="literature_review">Literature Review</option>
+                            <option value="thesis">Thesis Development</option>
+                            <option value="academic_critique">Academic Critique</option>
+                            <option value="essay_structure">Essay Structure</option>
+                            <option value="annotated_bibliography">Annotated Bibliography</option>
+                            <option value="case_study">Case Study Analysis</option>
+                            <option value="argumentative_essay">Argumentative Essay</option>
+                            <option value="comparative_analysis">Comparative Analysis</option>
+                        </optgroup>
+                        
+                        <!-- Scientific & Technical -->
+                        <optgroup label="Scientific & Technical">
+                            <option value="scientific_abstract">Scientific Abstract</option>
+                            <option value="methodology">Research Methodology</option>
+                            <option value="lab_report">Lab Report Structure</option>
+                            <option value="statistical_analysis">Statistical Analysis</option>
+                            <option value="research_ethics">Research Ethics Proposal</option>
+                            <option value="technical_report">Technical Report</option>
+                        </optgroup>
+                        
+                        <!-- Publication & Presentation -->
+                        <optgroup label="Publication & Presentation">
+                            <option value="journal_article">Journal Article Structure</option>
+                            <option value="conference_presentation">Conference Presentation</option>
+                            <option value="research_poster">Research Poster Design</option>
+                            <option value="book_chapter">Academic Book Chapter</option>
+                            <option value="book_review">Academic Book Review</option>
+                            <option value="peer_review">Peer Review</option>
+                        </optgroup>
+                        
+                        <!-- Teaching & Educational -->
+                        <optgroup label="Teaching & Educational">
+                            <option value="course_syllabus">Course Syllabus</option>
+                            <option value="lecture_plan">Lecture Plan</option>
+                            <option value="teaching_materials">Teaching Materials</option>
+                            <option value="student_feedback">Student Feedback</option>
+                            <option value="educational_assessment">Educational Assessment</option>
+                        </optgroup>
+                        
+                        <!-- Academic Career -->
+                        <optgroup label="Academic Career">
+                            <option value="grant">Grant Application</option>
+                            <option value="dissertation_defense">Dissertation Defense</option>
+                            <option value="academic_cv">Academic CV</option>
+                            <option value="research_statement">Research Statement</option>
+                            <option value="tenure_application">Tenure Application</option>
+                        </optgroup>
+                        
+                        <!-- Support & Resources -->
+                        <optgroup label="Support & Resources">
+                            <option value="citation">Citation Helper</option>
+                            <option value="plagiarism_prevention">Plagiarism Prevention</option>
+                            <option value="scholarly_sources">Scholarly Source Evaluation</option>
+                            <option value="academic_integrity">Academic Integrity Guide</option>
+                        </optgroup>
+                        
+                        <option value="custom">Custom Academic Template</option>
                     </select>
                 </div>
 
@@ -866,34 +947,7 @@
     /************* PROMPT TEMPLATE GENERATOR LOGIC *************/
     // Templates for quick selection
     const promptTemplates = {
-        writing: {
-            role: "creative writing expert with experience in fiction, blogs, and marketing copy",
-            task: "craft an engaging piece of content based on my specifications",
-            instructions: "creative, original writing that captures the right tone and style for my target audience",
-            background: "",
-            format: "with attention to structure, readability, and SEO best practices if applicable"
-        },
-        expert: {
-            role: "subject matter expert with deep knowledge in the field",
-            task: "provide detailed, accurate information and advice on the topic I present",
-            instructions: "nuanced analysis that covers different perspectives and addresses potential challenges",
-            background: "",
-            format: "in a clear, concise manner with relevant examples and actionable takeaways"
-        },
-        analysis: {
-            role: "data analyst with expertise in interpreting complex information",
-            task: "analyze the information I provide and extract meaningful insights",
-            instructions: "a thorough examination of patterns, trends, and anomalies in the data",
-            background: "",
-            format: "with visual representations where helpful, and clear explanations of your methodology and conclusions"
-        },
-        marketing: {
-            role: "experienced marketing strategist with expertise in digital campaigns and consumer psychology",
-            task: "create compelling marketing content for my product or service",
-            instructions: "attention-grabbing copy that highlights benefits, addresses pain points, and includes strong calls to action",
-            background: "",
-            format: "with different versions optimized for various platforms (social media, email, website)"
-        },
+        // Research & Writing Templates
         academic: {
             role: "academic researcher with expertise in scholarly writing and citation standards",
             task: "help me develop well-structured academic content on my chosen topic",
@@ -901,41 +955,263 @@
             background: "",
             format: "following proper academic structure with clear arguments, supporting evidence, and proper citations"
         },
-        coach: {
-            role: "experienced life coach with a background in psychology and personal development",
-            task: "provide guidance and support for my personal or professional goals",
-            instructions: "actionable advice, thoughtful questions, and perspective-shifting insights that help me overcome obstacles",
+        research_proposal: {
+            role: "research methodology expert with experience in grant writing and proposal development",
+            task: "help me craft a compelling research proposal for my academic project",
+            instructions: "a structured proposal with clear research questions, objectives, theoretical framework, and significance of the study",
             background: "",
-            format: "in a supportive, encouraging manner that empowers me to take action"
+            format: "following standard academic proposal format with sections for introduction, literature review, methodology, expected outcomes, timeline, and references"
         },
-        programmer: {
-            role: "senior software developer with expertise in multiple programming languages and best practices",
-            task: "help me solve a programming problem or develop code for my project",
-            instructions: "clean, efficient, and well-documented code that follows best practices",
+        literature_review: {
+            role: "academic researcher with extensive experience in literature analysis and synthesis",
+            task: "help me organize and analyze existing literature on my research topic",
+            instructions: "a comprehensive literature review that identifies patterns, gaps, and relationships among existing studies",
             background: "",
-            format: "with explanations of your approach, potential alternatives, and any important considerations"
+            format: "with thematic organization rather than chronological listing, highlighting theoretical frameworks and methodological approaches relevant to my research"
         },
-        summarizer: {
-            role: "content specialist with skills in distilling complex information into concise summaries",
-            task: "summarize the content I provide while retaining all key information",
-            instructions: "a clear, concise summary that captures the main points, arguments, and conclusions",
+        thesis: {
+            role: "dissertation advisor with expertise in thesis development and academic argumentation",
+            task: "help me develop and refine a strong thesis statement or dissertation framework",
+            instructions: "a clear, focused, and defensible thesis statement that establishes the significance of my research question",
             background: "",
-            format: "in bullet points for quick scanning as well as a short paragraph form"
+            format: "with supporting sub-arguments, potential counterarguments, and a roadmap for developing the larger work"
         },
-        editor: {
-            role: "professional editor with expertise in improving clarity, flow, and impact of written content",
-            task: "review and improve the text I provide",
-            instructions: "thoughtful edits that enhance clarity, eliminate errors, improve structure, and strengthen the overall impact",
+        academic_critique: {
+            role: "academic reviewer with expertise in critical analysis of scholarly works",
+            task: "help me develop a rigorous critique of an academic text or theory",
+            instructions: "a balanced critical analysis that evaluates strengths, weaknesses, assumptions, and implications",
             background: "",
-            format: "with both a revised version and explanations of significant changes"
+            format: "with evaluation of methodology, theoretical framework, evidence quality, logic of argumentation, and significance to the field"
         },
-        storyteller: {
-            role: "skilled storyteller with knowledge of narrative structure, character development, and engaging dialogue",
-            task: "create an engaging story based on my parameters",
-            instructions: "a compelling narrative with well-developed characters, interesting plot, and appropriate pacing",
+        essay_structure: {
+            role: "academic writing instructor with expertise in rhetorical structure and argumentation",
+            task: "help me plan the structure of my academic essay or paper",
+            instructions: "a logical framework that effectively develops my arguments and supports my thesis",
             background: "",
-            format: "in a style that matches my requested genre and target audience"
+            format: "with section outlines, transition strategies, and guidance for incorporating evidence and counter-arguments"
         },
+        annotated_bibliography: {
+            role: "academic librarian specialized in research methodology and bibliographic analysis",
+            task: "help me create an annotated bibliography for my research topic",
+            instructions: "comprehensive annotations that summarize, evaluate, and reflect on each source's relevance to my research",
+            background: "",
+            format: "following proper citation style with annotations that address the source's purpose, methodology, key findings, limitations, and value to my research"
+        },
+        case_study: {
+            role: "qualitative researcher with expertise in case study methodology across disciplines",
+            task: "help me develop an analytical case study for academic purposes",
+            instructions: "a detailed, rigorous case study that connects empirical observations with theoretical frameworks",
+            background: "",
+            format: "with clear case selection rationale, contextual background, methodological approach, findings analysis, implications, and limitations"
+        },
+        argumentative_essay: {
+            role: "rhetoric professor with expertise in logical argumentation and persuasive academic writing",
+            task: "help me develop a strong argumentative essay on my chosen topic",
+            instructions: "a well-reasoned argument supported by scholarly evidence and addressing counterarguments",
+            background: "",
+            format: "structured with a clear thesis, supporting arguments, counterargument acknowledgment, rebuttals, and a compelling conclusion"
+        },
+        comparative_analysis: {
+            role: "comparative research expert with experience in cross-disciplinary analytical frameworks",
+            task: "help me conduct a scholarly comparison between two or more subjects",
+            instructions: "a systematic comparative analysis identifying similarities, differences, and relationships",
+            background: "",
+            format: "using appropriate comparative methodology with clear comparison criteria, balanced analysis, and significant implications"
+        },
+        
+        // Scientific & Technical Templates
+        scientific_abstract: {
+            role: "scientific journal editor with expertise in abstract writing and academic publishing",
+            task: "help me craft a concise and effective abstract for my scientific paper",
+            instructions: "a comprehensive yet compact abstract that accurately represents my research",
+            background: "",
+            format: "following the standard structure: background, objectives, methods, results, and conclusions within a strict word limit"
+        },
+        methodology: {
+            role: "research methods specialist with expertise in qualitative and quantitative approaches",
+            task: "help me develop and describe the methodology section of my research",
+            instructions: "a detailed methodology description that justifies my research design choices",
+            background: "",
+            format: "including research approach, data collection methods, analytical techniques, ethical considerations, and limitations"
+        },
+        lab_report: {
+            role: "laboratory science instructor with expertise in scientific report writing",
+            task: "help me structure and write a comprehensive lab report",
+            instructions: "a clear, detailed lab report following scientific conventions",
+            background: "",
+            format: "with standard sections: title, abstract, introduction, methods, results, discussion, conclusion, and references, with appropriate data presentation"
+        },
+        statistical_analysis: {
+            role: "statistician with expertise in research design and data analysis for academic studies",
+            task: "help me plan or interpret the statistical analysis for my research",
+            instructions: "clear guidance on appropriate statistical methods, interpretation of results, and discussion of implications",
+            background: "",
+            format: "including explanation of statistical concepts, choice of tests, assumptions, limitations, and proper reporting format"
+        },
+        research_ethics: {
+            role: "research ethics committee member with expertise in ethical frameworks across disciplines",
+            task: "help me develop an ethics proposal or address ethical considerations in my research",
+            instructions: "a comprehensive assessment of ethical implications and appropriate protocols",
+            background: "",
+            format: "addressing informed consent, confidentiality, risk assessment, vulnerable populations, data handling, and researcher positionality"
+        },
+        technical_report: {
+            role: "technical writing specialist with expertise in scientific and engineering documentation",
+            task: "help me structure and write a technical report for my academic project",
+            instructions: "a clear, precise technical report that effectively communicates complex information",
+            background: "",
+            format: "with appropriate sections, terminology, data visualization, technical specificity, and audience consideration"
+        },
+        
+        // Publication & Presentation Templates
+        journal_article: {
+            role: "academic publishing consultant with experience in scholarly journal requirements",
+            task: "help me structure and develop a journal article based on my research",
+            instructions: "a well-structured manuscript that meets academic publishing standards",
+            background: "",
+            format: "following IMRAD or appropriate structure with attention to journal-specific requirements, contribution claims, and scholarly dialogue"
+        },
+        conference_presentation: {
+            role: "academic presentation coach with expertise in scholarly conference communications",
+            task: "help me prepare an effective conference presentation of my research",
+            instructions: "a clear, engaging presentation that effectively communicates my research to an academic audience",
+            background: "",
+            format: "structured for the allocated time with appropriate visual aids, key points emphasis, anticipated questions, and scholarly context"
+        },
+        research_poster: {
+            role: "academic visual communication specialist with expertise in research poster design",
+            task: "help me design an effective academic poster presentation",
+            instructions: "a visually compelling and informationally concise research poster",
+            background: "",
+            format: "with optimal layout, visual hierarchy, graphic elements, concise text, and appropriate data visualization for academic conference standards"
+        },
+        book_chapter: {
+            role: "academic editor with expertise in scholarly book production and chapter development",
+            task: "help me structure and write a chapter for an academic book",
+            instructions: "a coherent, substantial chapter that contributes to the book's overall theme while maintaining standalone value",
+            background: "",
+            format: "with appropriate scholarly depth, integration with the book's framework, thorough referencing, and attention to editor requirements"
+        },
+        book_review: {
+            role: "literary critic with expertise in academic book review conventions",
+            task: "help me write a scholarly book review for an academic publication",
+            instructions: "a critical, analytical review that evaluates the book's contribution to its field",
+            background: "",
+            format: "addressing the book's purpose, theoretical framework, methodological approach, evidence quality, argumentation, significance, and limitations"
+        },
+        peer_review: {
+            role: "academic journal reviewer with expertise in scholarly peer review processes",
+            task: "help me construct a thorough peer review for an academic manuscript",
+            instructions: "a constructive and comprehensive review that evaluates the manuscript's strengths and weaknesses",
+            background: "",
+            format: "addressing key aspects: contribution to the field, methodological rigor, theoretical framing, clarity of presentation, and recommendations for improvement"
+        },
+        
+        // Teaching & Educational Templates
+        course_syllabus: {
+            role: "curriculum design specialist with expertise in higher education pedagogy",
+            task: "help me develop a comprehensive syllabus for an academic course",
+            instructions: "a well-structured syllabus that effectively communicates course objectives, content, and expectations",
+            background: "",
+            format: "including course description, learning outcomes, schedule, assignments, assessment criteria, policies, and resources aligned with educational standards"
+        },
+        lecture_plan: {
+            role: "instructional designer with expertise in higher education teaching methodologies",
+            task: "help me create an effective lecture plan for an academic session",
+            instructions: "a structured lecture plan that facilitates learning through engagement and clear knowledge transmission",
+            background: "",
+            format: "with clear learning objectives, content sequence, engagement strategies, visual aids, discussion questions, and assessment components"
+        },
+        teaching_materials: {
+            role: "educational content developer with expertise in academic resource creation",
+            task: "help me develop effective teaching materials for my course",
+            instructions: "pedagogically sound materials that support student learning and engagement",
+            background: "",
+            format: "with clear instructional purpose, accessibility considerations, scaffolded complexity, and support for diverse learning approaches"
+        },
+        student_feedback: {
+            role: "educational assessment specialist with expertise in constructive feedback approaches",
+            task: "help me provide effective feedback on student academic work",
+            instructions: "constructive, specific feedback that facilitates student improvement and engagement",
+            background: "",
+            format: "balancing strengths and areas for improvement, specific examples, clear expectations, and actionable suggestions"
+        },
+        educational_assessment: {
+            role: "academic assessment expert with experience in educational evaluation methods",
+            task: "help me develop appropriate assessment methods for academic learning",
+            instructions: "valid, reliable assessment strategies that align with learning objectives",
+            background: "",
+            format: "with clear criteria, rubrics, diverse assessment types, formative and summative approaches, and academic integrity considerations"
+        },
+        
+        // Academic Career Templates
+        grant: {
+            role: "grant writing specialist with experience in academic funding applications",
+            task: "help me craft a compelling grant application for my research project",
+            instructions: "a persuasive proposal that clearly communicates the significance, innovation, and feasibility of my research",
+            background: "",
+            format: "addressing all key components: project summary, objectives, significance, innovation, approach, budget justification, and broader impacts"
+        },
+        dissertation_defense: {
+            role: "doctoral committee advisor with expertise in dissertation defense preparation",
+            task: "help me prepare for my dissertation defense",
+            instructions: "effective preparation strategies and response frameworks for the defense examination",
+            background: "",
+            format: "including presentation structure, anticipated questions, research justification approaches, and scholarly dialogue techniques"
+        },
+        academic_cv: {
+            role: "academic career advisor with expertise in scholarly CV development",
+            task: "help me create or improve my academic curriculum vitae",
+            instructions: "a comprehensive, properly formatted academic CV that effectively represents my scholarly accomplishments",
+            background: "",
+            format: "with appropriate sections, emphasis on research, teaching, service contributions, and adherence to academic conventions"
+        },
+        research_statement: {
+            role: "academic career consultant specialized in research narrative development",
+            task: "help me craft a compelling research statement for academic applications",
+            instructions: "a clear, focused research statement that articulates my scholarly identity and agenda",
+            background: "",
+            format: "addressing past accomplishments, current projects, future directions, theoretical frameworks, methodological approaches, and significance to the field"
+        },
+        tenure_application: {
+            role: "academic promotion specialist with expertise in tenure review processes",
+            task: "help me prepare effective materials for my tenure application",
+            instructions: "compelling documentation that demonstrates my qualifications for tenure",
+            background: "",
+            format: "highlighting scholarly impact, research trajectory, teaching effectiveness, service contributions, and alignment with institutional values"
+        },
+        
+        // Support & Resources Templates
+        citation: {
+            role: "academic librarian with expertise in citation styles and reference management",
+            task: "help me properly format citations and references for my academic work",
+            instructions: "guidance on correctly formatting in-text citations and bibliography entries",
+            background: "",
+            format: "according to the specific style guide I'm using (APA, MLA, Chicago, etc.) with examples for different source types"
+        },
+        plagiarism_prevention: {
+            role: "academic integrity officer with expertise in plagiarism identification and prevention",
+            task: "help me understand and avoid plagiarism in my academic writing",
+            instructions: "clear guidance on ethical citation practices and original contribution",
+            background: "",
+            format: "addressing different types of plagiarism, proper paraphrasing, quotation techniques, citation practices, and originality verification"
+        },
+        scholarly_sources: {
+            role: "research librarian with expertise in scholarly source evaluation",
+            task: "help me find and evaluate appropriate scholarly sources for my research",
+            instructions: "strategies for locating and critically assessing academic sources",
+            background: "",
+            format: "including database search techniques, source credibility criteria, disciplinary considerations, and integration approaches"
+        },
+        academic_integrity: {
+            role: "research ethics educator with expertise in academic integrity principles",
+            task: "help me understand and adhere to academic integrity standards in my work",
+            instructions: "comprehensive guidance on ethical academic practices",
+            background: "",
+            format: "addressing citation practices, collaboration boundaries, data integrity, research ethics, and institutional policy compliance"
+        },
+        
+        // Keep custom template for flexibility
         custom: {
             role: "",
             task: "",
