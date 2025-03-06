@@ -141,7 +141,7 @@
         }
         
         /* Card-like designs */
-        #promptContainer, #output, #timer, #settings-panel, #history-list li {
+        #promptContainer, #output, #timer, #settings-panel, #history-list li, .prompt-card {
             box-shadow: 0 4px 12px rgba(0,0,0,0.08);
             border-radius: 8px;
             border: 1px solid rgba(0,0,0,0.05);
@@ -310,6 +310,8 @@
             display: flex;
             flex-direction: column;
             height: calc(100% - 40px);
+            overflow-y: auto;
+            padding-bottom: 60px; /* Add extra padding at bottom for scrolling */
         }
         
         #promptContainer h2 {
@@ -334,136 +336,197 @@
             border-radius: 3px;
         }
         
-        #promptContainer .section {
-            margin-bottom: 16px;
+        /* Favorite prompts styling */
+        #prompt-categories {
+            margin-bottom: 20px;
         }
         
-        #promptContainer label {
-            display: block;
+        #category-select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+        
+        .prompt-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .prompt-card {
+            background-color: #f9f9f9;
+            padding: 15px;
+            padding-top: 40px; /* Space for the copy button */
+            border-radius: 8px;
+            position: relative;
+            transition: all 0.2s ease;
+            margin-bottom: 20px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .prompt-card:hover {
+            background-color: #f0f0f0;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+        }
+        
+        .prompt-title {
             font-weight: 600;
-            margin-bottom: 5px;
-            font-size: 0.95rem;
-            color: #34495e;
-        }
-        
-        #promptContainer textarea, 
-        #promptContainer select {
-            width: 100%;
-            box-sizing: border-box;
-            font-family: inherit;
-            font-size: 14px;
-            padding: 10px 12px;
-            resize: vertical;
-            border: 1px solid #e1e1e1;
-            border-radius: 6px;
-            background-color: #f9f9f9;
-            transition: all 0.3s;
-            min-height: 38px;
-        }
-        
-        #template-select {
-            width: 100%;
-            box-sizing: border-box;
-            font-family: inherit;
-            font-size: 14px;
-            padding: 10px 12px;
-            resize: vertical;
-            border: 1px solid #e1e1e1;
-            border-radius: 6px;
-            background-color: #f9f9f9;
-            transition: all 0.3s;
-            min-height: 38px;
-        }
-        
-        #template-select optgroup {
-            font-weight: bold;
-            font-style: normal;
+            margin-bottom: 10px;
             color: #2c3e50;
-            background-color: #f1f1f1;
+            font-size: 1.1rem;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 8px;
         }
         
-        #template-select option {
-            padding: 8px 4px;
+        .prompt-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #2c3e50;
+            font-size: 1.1rem;
         }
         
-        .dark-mode #template-select optgroup {
-            background-color: #4a5568;
-            color: #e2e8f0;
+        .prompt-content {
+            font-size: 0.95rem;
+            color: #555;
+            margin-bottom: 15px;
+            line-height: 1.4;
         }
         
-        #promptContainer textarea:focus,
-        #promptContainer select:focus {
-            outline: none;
-            border-color: #3498db;
-            background-color: white;
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
+        .prompt-actions {
+            display: flex;
+            gap: 8px;
         }
         
-        #promptContainer select {
-            appearance: none;
-            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23131313%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
-            background-repeat: no-repeat;
-            background-position: right 12px top 50%;
-            background-size: 12px auto;
-            padding-right: 30px;
+        .copy-btn {
+            background-color: #3498db;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 600;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.2s ease;
         }
         
-        #promptContainer .button-container {
+        .copy-btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .copy-btn:active {
+            transform: translateY(0);
+        }
+        
+        /* Academic prompts styling */
+        .prompt-content {
+            font-size: 0.95rem;
+            color: #555;
+            margin-bottom: 15px;
+            line-height: 1.5;
+            max-height: 120px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .prompt-content::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 40px;
+            background: linear-gradient(transparent, #f9f9f9);
+        }
+        
+        .dark-mode .prompt-content::after {
+            background: linear-gradient(transparent, #4a5568);
+        }
+        
+        .edit-btn {
+            background-color: #f39c12;
+            color: white;
+        }
+        
+        .delete-btn {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .copy-btn:hover {
+            opacity: 0.9;
+        }
+        
+        /* Add new prompt form */
+        #add-prompt-form {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        #add-prompt-form input,
+        #add-prompt-form textarea,
+        #add-prompt-form select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: inherit;
+        }
+        
+        #add-prompt-form textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        #add-prompt-form button {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 10px;
+        }
+        
+        #add-prompt-form button:hover {
+            background-color: #219653;
+        }
+        
+        /* Add category section */
+        #add-category-section {
             margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+        
+        #add-category-form {
             display: flex;
             gap: 10px;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            margin-top: auto;
-            padding-top: 15px;
         }
         
-        #promptContainer .button-container button {
-            flex: 1;
-            padding: 10px 16px;
-            font-weight: 600;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
-            transition: all 0.2s;
-            min-width: 100px;
-            border-radius: 6px;
-        }
-        
-        #generateBtn {
-            background-color: #2ecc71;
-        }
-        
-        #generateBtn:hover {
-            background-color: #27ae60;
-        }
-        
-        #clearBtn {
-            background-color: #e74c3c;
-        }
-        
-        #clearBtn:hover {
-            background-color: #c0392b;
-        }
-        
-        #promptContainer textarea#finalPrompt {
-            margin-top: 12px;
-            min-height: 100px;
-            font-family: 'Consolas', 'Courier New', monospace;
-            background-color: #f8f9fa;
-            border: 1px solid #e1e1e1;
-            padding: 12px;
-            line-height: 1.5;
-            color: #2c3e50;
-        }
-        
-        #promptContainer #copySuccess {
-            display: none;
-            margin-top: 8px;
-            color: #27ae60;
-            font-weight: 600;
-            text-align: center;
-            padding: 6px;
-            background-color: rgba(46, 204, 113, 0.1);
+        #add-category-form input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
             border-radius: 4px;
+        }
+        
+        #add-category-form button {
+            background-color: #9b59b6;
+            color: white;
         }
 
         #settings-panel, #history {
@@ -623,7 +686,22 @@
             border-color: #4a5568;
         }
         
-        .dark-mode #promptContainer textarea,
+        .dark-mode .prompt-card {
+            background-color: #4a5568;
+        }
+        
+        .dark-mode .prompt-title {
+            color: #e2e8f0;
+        }
+        
+        .dark-mode .prompt-content {
+            color: #cbd5e0;
+        }
+        
+        .dark-mode #add-prompt-form input,
+        .dark-mode #add-prompt-form textarea,
+        .dark-mode #add-prompt-form select,
+        .dark-mode #add-category-form input,
         .dark-mode #promptContainer select,
         .dark-mode #history-search,
         .dark-mode #language-select {
@@ -632,15 +710,11 @@
             border-color: #2d3748;
         }
         
-        .dark-mode #promptContainer textarea::placeholder,
+        .dark-mode #add-prompt-form input::placeholder,
+        .dark-mode #add-prompt-form textarea::placeholder,
+        .dark-mode #add-category-form input::placeholder,
         .dark-mode #history-search::placeholder {
             color: #a0aec0;
-        }
-        
-        .dark-mode #promptContainer textarea#finalPrompt {
-            background-color: #4a5568;
-            border-color: #2d3748;
-            color: #e2e8f0;
         }
 
         .dark-mode #timer {
@@ -690,11 +764,6 @@
         .dark-mode .popup {
             background-color: rgba(255, 255, 255, 0.15);
             color: #e2e8f0;
-        }
-        
-        .dark-mode #promptContainer #copySuccess {
-            color: #68d391;
-            background-color: rgba(104, 211, 145, 0.1);
         }
         
         .dark-mode #guide-content {
@@ -748,13 +817,12 @@
     <div id="quick-guide">
         <span id="toggle-guide" style="cursor:pointer; text-decoration:underline; color:#3498db; font-size:0.9rem;">How to use</span>
         <div id="guide-content" style="display:none; margin-top:10px; padding:15px; background:#f8f9fa; border-radius:8px; max-width:800px; font-size:0.95rem;">
-            <p><strong>Left Panel:</strong> Create structured AI prompts by filling in the template fields.</p>
+            <p><strong>Left Panel:</strong> Access your favorite prompts, organize them by categories, and copy with one click.</p>
             <p><strong>Right Panel:</strong> Convert your speech to text in real-time, edit, and save the results.</p>
             <p><strong>Keyboard Shortcuts:</strong> 
                 <kbd>Ctrl+B</kbd> Start/Stop Recording | 
                 <kbd>Ctrl+P</kbd> Pause/Resume | 
-                <kbd>Ctrl+S</kbd> Save Text | 
-                <kbd>Ctrl+G</kbd> Generate Prompt
+                <kbd>Ctrl+S</kbd> Save Text
             </p>
         </div>
     </div>
@@ -762,124 +830,28 @@
     <!-- TWO-COLUMN LAYOUT -->
     <div id="two-column-layout">
 
-        <!-- LEFT COLUMN: Prompt Template Generator -->
+        <!-- LEFT COLUMN: Favorite Prompts -->
         <div id="left-column">
             <div id="promptContainer">
-                <h2>Prompt Template Generator</h2>
+                <h2>Academic Writing Prompts</h2>
 
-                <!-- Quick Templates Dropdown -->
-                <div class="section">
-                    <label for="template-select">Academic Templates:</label>
-                    <select id="template-select" style="width: 100%; padding: 10px; border-radius: 6px;">
-                        <option value="">Select a template...</option>
-                        
-                        <!-- Research & Writing Templates -->
-                        <optgroup label="Research & Writing">
-                            <option value="academic">General Academic Writing</option>
-                            <option value="research_proposal">Research Proposal</option>
-                            <option value="literature_review">Literature Review</option>
-                            <option value="thesis">Thesis Development</option>
-                            <option value="academic_critique">Academic Critique</option>
-                            <option value="essay_structure">Essay Structure</option>
-                            <option value="annotated_bibliography">Annotated Bibliography</option>
-                            <option value="case_study">Case Study Analysis</option>
-                            <option value="argumentative_essay">Argumentative Essay</option>
-                            <option value="comparative_analysis">Comparative Analysis</option>
-                        </optgroup>
-                        
-                        <!-- Scientific & Technical -->
-                        <optgroup label="Scientific & Technical">
-                            <option value="scientific_abstract">Scientific Abstract</option>
-                            <option value="methodology">Research Methodology</option>
-                            <option value="lab_report">Lab Report Structure</option>
-                            <option value="statistical_analysis">Statistical Analysis</option>
-                            <option value="research_ethics">Research Ethics Proposal</option>
-                            <option value="technical_report">Technical Report</option>
-                        </optgroup>
-                        
-                        <!-- Publication & Presentation -->
-                        <optgroup label="Publication & Presentation">
-                            <option value="journal_article">Journal Article Structure</option>
-                            <option value="conference_presentation">Conference Presentation</option>
-                            <option value="research_poster">Research Poster Design</option>
-                            <option value="book_chapter">Academic Book Chapter</option>
-                            <option value="book_review">Academic Book Review</option>
-                            <option value="peer_review">Peer Review</option>
-                        </optgroup>
-                        
-                        <!-- Teaching & Educational -->
-                        <optgroup label="Teaching & Educational">
-                            <option value="course_syllabus">Course Syllabus</option>
-                            <option value="lecture_plan">Lecture Plan</option>
-                            <option value="teaching_materials">Teaching Materials</option>
-                            <option value="student_feedback">Student Feedback</option>
-                            <option value="educational_assessment">Educational Assessment</option>
-                        </optgroup>
-                        
-                        <!-- Academic Career -->
-                        <optgroup label="Academic Career">
-                            <option value="grant">Grant Application</option>
-                            <option value="dissertation_defense">Dissertation Defense</option>
-                            <option value="academic_cv">Academic CV</option>
-                            <option value="research_statement">Research Statement</option>
-                            <option value="tenure_application">Tenure Application</option>
-                        </optgroup>
-                        
-                        <!-- Support & Resources -->
-                        <optgroup label="Support & Resources">
-                            <option value="citation">Citation Helper</option>
-                            <option value="plagiarism_prevention">Plagiarism Prevention</option>
-                            <option value="scholarly_sources">Scholarly Source Evaluation</option>
-                            <option value="academic_integrity">Academic Integrity Guide</option>
-                        </optgroup>
-                        
-                        <option value="custom">Custom Academic Template</option>
-                    </select>
+                <!-- Simplified without category selector since we're focusing only on writing -->
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <p style="font-style: italic; color: #666;">Copy these ready-to-use academic writing prompts with one click!</p>
                 </div>
 
-                <!-- 1) "You are a" -->
-                <div class="section">
-                    <label for="roleContext">You are a:</label>
-                    <textarea id="roleContext" rows="1" placeholder="e.g., marketing expert with 10 years experience"></textarea>
+                <!-- Prompt list - will be populated by JavaScript -->
+                <div class="prompt-list" id="prompt-list">
+                    <!-- Prompts will be inserted here -->
                 </div>
-
-                <!-- 2) "Your task is to" -->
-                <div class="section">
-                    <label for="objective">Your task is to:</label>
-                    <textarea id="objective" rows="1" placeholder="e.g., create engaging social media content for my product"></textarea>
-                </div>
-
-                <!-- 3) "Provide" -->
-                <div class="section">
-                    <label for="detailedInstructions">Provide:</label>
-                    <textarea id="detailedInstructions" rows="2" placeholder="e.g., clear, punchy headlines that drive engagement and incorporate the latest trends"></textarea>
-                </div>
-
-                <!-- 4) Background/Context -->
-                <div class="section">
-                    <label for="backgroundContext">Background/Context:</label>
-                    <textarea id="backgroundContext" rows="2" placeholder="e.g., Our product is a sustainable water bottle targeting health-conscious millennials"></textarea>
-                </div>
-
-                <!-- 5) "Present your answer" -->
-                <div class="section">
-                    <label for="outputFormat">Present your answer:</label>
-                    <textarea id="outputFormat" rows="1" placeholder="e.g., in a numbered list with 5 options, including rationale for each"></textarea>
-                </div>
-
-                <!-- Buttons and output -->
-                <div class="button-container">
-                    <button id="generateBtn"><i class="fas fa-bolt"></i> Generate & Copy</button>
-                    <button id="clearBtn"><i class="fas fa-trash"></i> Clear All</button>
-                </div>
-                <textarea id="finalPrompt" readonly></textarea>
-                <div id="copySuccess">Copied to clipboard!</div>
                 
-                <!-- Speech to Prompt Button -->
-                <div style="margin-top: 15px; text-align: center;">
-                    <button id="speech-to-prompt-btn" style="background-color: #9b59b6; width: 100%;">
-                        <i class="fas fa-magic"></i> Convert Speech to Prompt
-                    </button>
+                <!-- Add new prompt form -->
+                <div id="add-prompt-form">
+                    <h3><i class="fas fa-plus-circle"></i> Add Your Own Academic Prompt</h3>
+                    <input type="text" id="prompt-title" placeholder="Title (e.g. 'APA Citation Guide')" />
+                    <textarea id="prompt-content" placeholder="Enter your academic writing prompt here..."></textarea>
+                    <input type="hidden" id="prompt-category" value="writing" />
+                    <button id="save-prompt-btn"><i class="fas fa-save"></i> Save Prompt</button>
                 </div>
             </div>
         </div>
@@ -944,382 +916,359 @@
 
     <!-- =============== SCRIPTS =============== -->
     <script>
-    /************* PROMPT TEMPLATE GENERATOR LOGIC *************/
-    // Templates for quick selection
-    const promptTemplates = {
-        // Research & Writing Templates
-        academic: {
-            role: "academic researcher with expertise in scholarly writing and citation standards",
-            task: "help me develop well-structured academic content on my chosen topic",
-            instructions: "thorough, evidence-based analysis that adheres to academic standards and incorporates relevant literature",
-            background: "",
-            format: "following proper academic structure with clear arguments, supporting evidence, and proper citations"
-        },
-        research_proposal: {
-            role: "research methodology expert with experience in grant writing and proposal development",
-            task: "help me craft a compelling research proposal for my academic project",
-            instructions: "a structured proposal with clear research questions, objectives, theoretical framework, and significance of the study",
-            background: "",
-            format: "following standard academic proposal format with sections for introduction, literature review, methodology, expected outcomes, timeline, and references"
-        },
-        literature_review: {
-            role: "academic researcher with extensive experience in literature analysis and synthesis",
-            task: "help me organize and analyze existing literature on my research topic",
-            instructions: "a comprehensive literature review that identifies patterns, gaps, and relationships among existing studies",
-            background: "",
-            format: "with thematic organization rather than chronological listing, highlighting theoretical frameworks and methodological approaches relevant to my research"
-        },
-        thesis: {
-            role: "dissertation advisor with expertise in thesis development and academic argumentation",
-            task: "help me develop and refine a strong thesis statement or dissertation framework",
-            instructions: "a clear, focused, and defensible thesis statement that establishes the significance of my research question",
-            background: "",
-            format: "with supporting sub-arguments, potential counterarguments, and a roadmap for developing the larger work"
-        },
-        academic_critique: {
-            role: "academic reviewer with expertise in critical analysis of scholarly works",
-            task: "help me develop a rigorous critique of an academic text or theory",
-            instructions: "a balanced critical analysis that evaluates strengths, weaknesses, assumptions, and implications",
-            background: "",
-            format: "with evaluation of methodology, theoretical framework, evidence quality, logic of argumentation, and significance to the field"
-        },
-        essay_structure: {
-            role: "academic writing instructor with expertise in rhetorical structure and argumentation",
-            task: "help me plan the structure of my academic essay or paper",
-            instructions: "a logical framework that effectively develops my arguments and supports my thesis",
-            background: "",
-            format: "with section outlines, transition strategies, and guidance for incorporating evidence and counter-arguments"
-        },
-        annotated_bibliography: {
-            role: "academic librarian specialized in research methodology and bibliographic analysis",
-            task: "help me create an annotated bibliography for my research topic",
-            instructions: "comprehensive annotations that summarize, evaluate, and reflect on each source's relevance to my research",
-            background: "",
-            format: "following proper citation style with annotations that address the source's purpose, methodology, key findings, limitations, and value to my research"
-        },
-        case_study: {
-            role: "qualitative researcher with expertise in case study methodology across disciplines",
-            task: "help me develop an analytical case study for academic purposes",
-            instructions: "a detailed, rigorous case study that connects empirical observations with theoretical frameworks",
-            background: "",
-            format: "with clear case selection rationale, contextual background, methodological approach, findings analysis, implications, and limitations"
-        },
-        argumentative_essay: {
-            role: "rhetoric professor with expertise in logical argumentation and persuasive academic writing",
-            task: "help me develop a strong argumentative essay on my chosen topic",
-            instructions: "a well-reasoned argument supported by scholarly evidence and addressing counterarguments",
-            background: "",
-            format: "structured with a clear thesis, supporting arguments, counterargument acknowledgment, rebuttals, and a compelling conclusion"
-        },
-        comparative_analysis: {
-            role: "comparative research expert with experience in cross-disciplinary analytical frameworks",
-            task: "help me conduct a scholarly comparison between two or more subjects",
-            instructions: "a systematic comparative analysis identifying similarities, differences, and relationships",
-            background: "",
-            format: "using appropriate comparative methodology with clear comparison criteria, balanced analysis, and significant implications"
+    /************* STORAGE HANDLING WITH FALLBACK MECHANISM *************/
+    // Create a fallback storage when localStorage isn't available
+    const storageHandler = {
+        // In-memory fallback storage
+        memoryStorage: {
+            data: {},
+            getItem(key) {
+                return this.data[key] || null;
+            },
+            setItem(key, value) {
+                this.data[key] = value;
+            },
+            removeItem(key) {
+                delete this.data[key];
+            }
         },
         
-        // Scientific & Technical Templates
-        scientific_abstract: {
-            role: "scientific journal editor with expertise in abstract writing and academic publishing",
-            task: "help me craft a concise and effective abstract for my scientific paper",
-            instructions: "a comprehensive yet compact abstract that accurately represents my research",
-            background: "",
-            format: "following the standard structure: background, objectives, methods, results, and conclusions within a strict word limit"
-        },
-        methodology: {
-            role: "research methods specialist with expertise in qualitative and quantitative approaches",
-            task: "help me develop and describe the methodology section of my research",
-            instructions: "a detailed methodology description that justifies my research design choices",
-            background: "",
-            format: "including research approach, data collection methods, analytical techniques, ethical considerations, and limitations"
-        },
-        lab_report: {
-            role: "laboratory science instructor with expertise in scientific report writing",
-            task: "help me structure and write a comprehensive lab report",
-            instructions: "a clear, detailed lab report following scientific conventions",
-            background: "",
-            format: "with standard sections: title, abstract, introduction, methods, results, discussion, conclusion, and references, with appropriate data presentation"
-        },
-        statistical_analysis: {
-            role: "statistician with expertise in research design and data analysis for academic studies",
-            task: "help me plan or interpret the statistical analysis for my research",
-            instructions: "clear guidance on appropriate statistical methods, interpretation of results, and discussion of implications",
-            background: "",
-            format: "including explanation of statistical concepts, choice of tests, assumptions, limitations, and proper reporting format"
-        },
-        research_ethics: {
-            role: "research ethics committee member with expertise in ethical frameworks across disciplines",
-            task: "help me develop an ethics proposal or address ethical considerations in my research",
-            instructions: "a comprehensive assessment of ethical implications and appropriate protocols",
-            background: "",
-            format: "addressing informed consent, confidentiality, risk assessment, vulnerable populations, data handling, and researcher positionality"
-        },
-        technical_report: {
-            role: "technical writing specialist with expertise in scientific and engineering documentation",
-            task: "help me structure and write a technical report for my academic project",
-            instructions: "a clear, precise technical report that effectively communicates complex information",
-            background: "",
-            format: "with appropriate sections, terminology, data visualization, technical specificity, and audience consideration"
+        // Flag to track if localStorage is available
+        hasLocalStorage: false,
+        
+        // Test localStorage availability
+        init() {
+            try {
+                window.localStorage.setItem('storage_test', 'test');
+                window.localStorage.removeItem('storage_test');
+                this.hasLocalStorage = true;
+            } catch (e) {
+                this.hasLocalStorage = false;
+                // Show a notification that data won't persist
+                setTimeout(() => {
+                    showPopup('Storage unavailable: Your prompts and settings won\'t be saved when you leave the page', 4000);
+                }, 1000);
+                console.log('localStorage is not available. Using in-memory storage instead.');
+            }
         },
         
-        // Publication & Presentation Templates
-        journal_article: {
-            role: "academic publishing consultant with experience in scholarly journal requirements",
-            task: "help me structure and develop a journal article based on my research",
-            instructions: "a well-structured manuscript that meets academic publishing standards",
-            background: "",
-            format: "following IMRAD or appropriate structure with attention to journal-specific requirements, contribution claims, and scholarly dialogue"
-        },
-        conference_presentation: {
-            role: "academic presentation coach with expertise in scholarly conference communications",
-            task: "help me prepare an effective conference presentation of my research",
-            instructions: "a clear, engaging presentation that effectively communicates my research to an academic audience",
-            background: "",
-            format: "structured for the allocated time with appropriate visual aids, key points emphasis, anticipated questions, and scholarly context"
-        },
-        research_poster: {
-            role: "academic visual communication specialist with expertise in research poster design",
-            task: "help me design an effective academic poster presentation",
-            instructions: "a visually compelling and informationally concise research poster",
-            background: "",
-            format: "with optimal layout, visual hierarchy, graphic elements, concise text, and appropriate data visualization for academic conference standards"
-        },
-        book_chapter: {
-            role: "academic editor with expertise in scholarly book production and chapter development",
-            task: "help me structure and write a chapter for an academic book",
-            instructions: "a coherent, substantial chapter that contributes to the book's overall theme while maintaining standalone value",
-            background: "",
-            format: "with appropriate scholarly depth, integration with the book's framework, thorough referencing, and attention to editor requirements"
-        },
-        book_review: {
-            role: "literary critic with expertise in academic book review conventions",
-            task: "help me write a scholarly book review for an academic publication",
-            instructions: "a critical, analytical review that evaluates the book's contribution to its field",
-            background: "",
-            format: "addressing the book's purpose, theoretical framework, methodological approach, evidence quality, argumentation, significance, and limitations"
-        },
-        peer_review: {
-            role: "academic journal reviewer with expertise in scholarly peer review processes",
-            task: "help me construct a thorough peer review for an academic manuscript",
-            instructions: "a constructive and comprehensive review that evaluates the manuscript's strengths and weaknesses",
-            background: "",
-            format: "addressing key aspects: contribution to the field, methodological rigor, theoretical framing, clarity of presentation, and recommendations for improvement"
+        // Get from storage with fallback
+        getItem(key) {
+            if (this.hasLocalStorage) {
+                try {
+                    return localStorage.getItem(key);
+                } catch (e) {
+                    console.log('Error accessing localStorage:', e);
+                    return this.memoryStorage.getItem(key);
+                }
+            }
+            return this.memoryStorage.getItem(key);
         },
         
-        // Teaching & Educational Templates
-        course_syllabus: {
-            role: "curriculum design specialist with expertise in higher education pedagogy",
-            task: "help me develop a comprehensive syllabus for an academic course",
-            instructions: "a well-structured syllabus that effectively communicates course objectives, content, and expectations",
-            background: "",
-            format: "including course description, learning outcomes, schedule, assignments, assessment criteria, policies, and resources aligned with educational standards"
-        },
-        lecture_plan: {
-            role: "instructional designer with expertise in higher education teaching methodologies",
-            task: "help me create an effective lecture plan for an academic session",
-            instructions: "a structured lecture plan that facilitates learning through engagement and clear knowledge transmission",
-            background: "",
-            format: "with clear learning objectives, content sequence, engagement strategies, visual aids, discussion questions, and assessment components"
-        },
-        teaching_materials: {
-            role: "educational content developer with expertise in academic resource creation",
-            task: "help me develop effective teaching materials for my course",
-            instructions: "pedagogically sound materials that support student learning and engagement",
-            background: "",
-            format: "with clear instructional purpose, accessibility considerations, scaffolded complexity, and support for diverse learning approaches"
-        },
-        student_feedback: {
-            role: "educational assessment specialist with expertise in constructive feedback approaches",
-            task: "help me provide effective feedback on student academic work",
-            instructions: "constructive, specific feedback that facilitates student improvement and engagement",
-            background: "",
-            format: "balancing strengths and areas for improvement, specific examples, clear expectations, and actionable suggestions"
-        },
-        educational_assessment: {
-            role: "academic assessment expert with experience in educational evaluation methods",
-            task: "help me develop appropriate assessment methods for academic learning",
-            instructions: "valid, reliable assessment strategies that align with learning objectives",
-            background: "",
-            format: "with clear criteria, rubrics, diverse assessment types, formative and summative approaches, and academic integrity considerations"
+        // Set to storage with fallback
+        setItem(key, value) {
+            if (this.hasLocalStorage) {
+                try {
+                    localStorage.setItem(key, value);
+                } catch (e) {
+                    console.log('Error writing to localStorage:', e);
+                    this.memoryStorage.setItem(key, value);
+                }
+            } else {
+                this.memoryStorage.setItem(key, value);
+            }
         },
         
-        // Academic Career Templates
-        grant: {
-            role: "grant writing specialist with experience in academic funding applications",
-            task: "help me craft a compelling grant application for my research project",
-            instructions: "a persuasive proposal that clearly communicates the significance, innovation, and feasibility of my research",
-            background: "",
-            format: "addressing all key components: project summary, objectives, significance, innovation, approach, budget justification, and broader impacts"
-        },
-        dissertation_defense: {
-            role: "doctoral committee advisor with expertise in dissertation defense preparation",
-            task: "help me prepare for my dissertation defense",
-            instructions: "effective preparation strategies and response frameworks for the defense examination",
-            background: "",
-            format: "including presentation structure, anticipated questions, research justification approaches, and scholarly dialogue techniques"
-        },
-        academic_cv: {
-            role: "academic career advisor with expertise in scholarly CV development",
-            task: "help me create or improve my academic curriculum vitae",
-            instructions: "a comprehensive, properly formatted academic CV that effectively represents my scholarly accomplishments",
-            background: "",
-            format: "with appropriate sections, emphasis on research, teaching, service contributions, and adherence to academic conventions"
-        },
-        research_statement: {
-            role: "academic career consultant specialized in research narrative development",
-            task: "help me craft a compelling research statement for academic applications",
-            instructions: "a clear, focused research statement that articulates my scholarly identity and agenda",
-            background: "",
-            format: "addressing past accomplishments, current projects, future directions, theoretical frameworks, methodological approaches, and significance to the field"
-        },
-        tenure_application: {
-            role: "academic promotion specialist with expertise in tenure review processes",
-            task: "help me prepare effective materials for my tenure application",
-            instructions: "compelling documentation that demonstrates my qualifications for tenure",
-            background: "",
-            format: "highlighting scholarly impact, research trajectory, teaching effectiveness, service contributions, and alignment with institutional values"
-        },
-        
-        // Support & Resources Templates
-        citation: {
-            role: "academic librarian with expertise in citation styles and reference management",
-            task: "help me properly format citations and references for my academic work",
-            instructions: "guidance on correctly formatting in-text citations and bibliography entries",
-            background: "",
-            format: "according to the specific style guide I'm using (APA, MLA, Chicago, etc.) with examples for different source types"
-        },
-        plagiarism_prevention: {
-            role: "academic integrity officer with expertise in plagiarism identification and prevention",
-            task: "help me understand and avoid plagiarism in my academic writing",
-            instructions: "clear guidance on ethical citation practices and original contribution",
-            background: "",
-            format: "addressing different types of plagiarism, proper paraphrasing, quotation techniques, citation practices, and originality verification"
-        },
-        scholarly_sources: {
-            role: "research librarian with expertise in scholarly source evaluation",
-            task: "help me find and evaluate appropriate scholarly sources for my research",
-            instructions: "strategies for locating and critically assessing academic sources",
-            background: "",
-            format: "including database search techniques, source credibility criteria, disciplinary considerations, and integration approaches"
-        },
-        academic_integrity: {
-            role: "research ethics educator with expertise in academic integrity principles",
-            task: "help me understand and adhere to academic integrity standards in my work",
-            instructions: "comprehensive guidance on ethical academic practices",
-            background: "",
-            format: "addressing citation practices, collaboration boundaries, data integrity, research ethics, and institutional policy compliance"
-        },
-        
-        // Keep custom template for flexibility
-        custom: {
-            role: "",
-            task: "",
-            instructions: "",
-            background: "",
-            format: ""
+        // Remove from storage with fallback
+        removeItem(key) {
+            if (this.hasLocalStorage) {
+                try {
+                    localStorage.removeItem(key);
+                } catch (e) {
+                    console.log('Error removing from localStorage:', e);
+                    this.memoryStorage.removeItem(key);
+                }
+            } else {
+                this.memoryStorage.removeItem(key);
+            }
         }
     };
     
-    // Load template when selected
-    document.getElementById("template-select").addEventListener("change", function() {
-        const templateKey = this.value;
-        if (templateKey && promptTemplates[templateKey]) {
-            const template = promptTemplates[templateKey];
-            document.getElementById("roleContext").value = template.role;
-            document.getElementById("objective").value = template.task;
-            document.getElementById("detailedInstructions").value = template.instructions;
-            document.getElementById("backgroundContext").value = template.background;
-            document.getElementById("outputFormat").value = template.format;
-        }
-    });
+    // Initialize storage handler
+    storageHandler.init();
     
-    function generateAndCopyPrompt(copyToClipboard = true) {
-      // Retrieve the content of each field
-      const roleContext = document.getElementById("roleContext").value.trim();
-      const objective = document.getElementById("objective").value.trim();
-      const detailedInstructions = document.getElementById("detailedInstructions").value.trim();
-      const backgroundContext = document.getElementById("backgroundContext").value.trim();
-      const outputFormat = document.getElementById("outputFormat").value.trim();
-
-      // Build the final prompt, including each phrase only if the field is filled
-      let finalPromptText = "";
-
-      if (roleContext) {
-        finalPromptText += `You are a ${roleContext}\n\n`;
-      }
-      if (objective) {
-        finalPromptText += `Your task is to ${objective}\n\n`;
-      }
-      if (detailedInstructions) {
-        finalPromptText += `Provide ${detailedInstructions}\n\n`;
-      }
-      if (backgroundContext) {
-        finalPromptText += `Background/Context:\n${backgroundContext}\n\n`;
-      }
-      if (outputFormat) {
-        finalPromptText += `Present your answer ${outputFormat}\n\n`;
-      }
-
-      // Trim extra spaces/newlines
-      finalPromptText = finalPromptText.trim();
-
-      // Place the result in the finalPrompt textarea
-      const finalPromptArea = document.getElementById("finalPrompt");
-      finalPromptArea.value = finalPromptText;
-
-      // Copy to clipboard if requested
-      if (copyToClipboard) {
+    // Academic writing prompts (standardized to all use "academic text")
+    const defaultPrompts = [
+        {
+            id: 'paraphrase',
+            title: 'Paraphrase Text',
+            content: 'Paraphrase the following academic text to avoid plagiarism while maintaining all key ideas and information. Make it sound natural and academic, but use different sentence structures and vocabulary than the original:',
+            category: 'writing',
+            permanent: true
+        },
+        {
+            id: 'enhance',
+            title: 'Enhance Academic Writing',
+            content: 'Enhance the following academic text by improving vocabulary, sentence structure, and scholarly tone. Make it more sophisticated, precise, and academically rigorous without changing the core meaning:',
+            category: 'writing',
+            permanent: true
+        },
+        {
+            id: 'grammar',
+            title: 'Fix Grammar & Style',
+            content: 'Correct the following academic text, fixing all grammatical errors, improving awkward phrasing, ensuring proper academic style, and maintaining consistency in tense and voice. Explain the major corrections made:',
+            category: 'writing',
+            permanent: true
+        }
+    ];
+    
+        // Initialize user's prompts with defaults (using storage wrapper)
+    let userPrompts = JSON.parse(storageHandler.getItem('userPrompts')) || [...defaultPrompts];
+    // For this version, we're focusing only on writing prompts
+    let userCategories = ['writing'];
+    
+    // Initialize the category dropdown
+    function initCategoryDropdown() {
+        const categorySelect = document.getElementById('category-select');
+        const promptCategorySelect = document.getElementById('prompt-category');
+        
+        // Clear existing options (except the "All Prompts" option for the filter dropdown)
+        while (categorySelect.options.length > 1) {
+            categorySelect.remove(1);
+        }
+        
+        while (promptCategorySelect.options.length > 0) {
+            promptCategorySelect.remove(0);
+        }
+        
+        // Add user categories to both dropdowns
+        userCategories.forEach(category => {
+            // Add to filter dropdown
+            const filterOption = document.createElement('option');
+            filterOption.value = category;
+            filterOption.textContent = category.charAt(0).toUpperCase() + category.slice(1);
+            categorySelect.appendChild(filterOption);
+            
+            // Add to new prompt form dropdown
+            const formOption = document.createElement('option');
+            formOption.value = category;
+            formOption.textContent = category.charAt(0).toUpperCase() + category.slice(1);
+            promptCategorySelect.appendChild(formOption);
+        });
+    }
+    
+    // Render prompts based on selected category
+    function renderPrompts(category = 'all') {
+        const promptList = document.getElementById('prompt-list');
+        promptList.innerHTML = '';
+        
+        const filteredPrompts = category === 'all' 
+            ? userPrompts 
+            : userPrompts.filter(prompt => prompt.category === category);
+        
+        if (filteredPrompts.length === 0) {
+            promptList.innerHTML = '<p style="text-align:center;font-style:italic;color:#777;">No prompts in this category yet. Add one below!</p>';
+            return;
+        }
+        
+        filteredPrompts.forEach(prompt => {
+            const promptCard = document.createElement('div');
+            promptCard.className = 'prompt-card';
+            promptCard.dataset.id = prompt.id;
+            
+            const titleElement = document.createElement('div');
+            titleElement.className = 'prompt-title';
+            titleElement.textContent = prompt.title;
+            
+            // Add a larger, more prominent copy button at the top right
+            const quickCopyBtn = document.createElement('button');
+            quickCopyBtn.className = 'copy-btn';
+            quickCopyBtn.style.position = 'absolute';
+            quickCopyBtn.style.top = '10px';
+            quickCopyBtn.style.right = '10px';
+            quickCopyBtn.style.padding = '8px 12px';
+            quickCopyBtn.style.fontSize = '0.9rem';
+            quickCopyBtn.innerHTML = '<i class="fas fa-copy"></i> Copy';
+            quickCopyBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                copyPrompt(prompt.content);
+            });
+            
+            const contentElement = document.createElement('div');
+            contentElement.className = 'prompt-content';
+            contentElement.textContent = prompt.content;
+            
+            const actionsElement = document.createElement('div');
+            actionsElement.className = 'prompt-actions';
+            
+            promptCard.appendChild(quickCopyBtn);
+            
+            // Only add edit and delete buttons for non-permanent prompts
+            if (!prompt.permanent) {
+                const editButton = document.createElement('button');
+                editButton.className = 'copy-btn edit-btn';
+                editButton.innerHTML = '<i class="fas fa-edit"></i> Edit';
+                editButton.addEventListener('click', () => editPrompt(prompt.id));
+                
+                const deleteButton = document.createElement('button');
+                deleteButton.className = 'copy-btn delete-btn';
+                deleteButton.innerHTML = '<i class="fas fa-trash"></i> Delete';
+                deleteButton.addEventListener('click', () => deletePrompt(prompt.id));
+                
+                actionsElement.appendChild(editButton);
+                actionsElement.appendChild(deleteButton);
+            }
+            
+            promptCard.appendChild(titleElement);
+            promptCard.appendChild(contentElement);
+            promptCard.appendChild(actionsElement);
+            
+            promptList.appendChild(promptCard);
+        });
+    }
+    
+    // Copy prompt to clipboard
+    function copyPrompt(content) {
         if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(finalPromptText)
-            .then(() => showCopySuccess())
-            .catch(err => console.error("Error copying:", err));
+            navigator.clipboard.writeText(content)
+                .then(() => showPopup('Prompt copied to clipboard!'))
+                .catch(err => console.error('Could not copy text: ', err));
         } else {
-          // Fallback for older browsers
-          finalPromptArea.select();
-          document.execCommand("copy");
-          showCopySuccess();
+            // Fallback method
+            const textarea = document.createElement('textarea');
+            textarea.value = content;
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showPopup('Prompt copied to clipboard!');
+            } catch (err) {
+                console.error('Could not copy text: ', err);
+                showPopup('Failed to copy to clipboard.');
+            }
+            document.body.removeChild(textarea);
         }
-      }
-      
-      // Save to local storage for future use
-      saveCustomTemplate();
-    }
-
-    // Show a transient "copied" message for one second
-    function showCopySuccess() {
-      const copySuccessDiv = document.getElementById("copySuccess");
-      copySuccessDiv.style.display = "block";
-      setTimeout(() => {
-        copySuccessDiv.style.display = "none";
-      }, 1500);
-    }
-
-    // Clear all text fields and the final prompt area
-    function clearAllFields() {
-      document.getElementById("roleContext").value = "";
-      document.getElementById("objective").value = "";
-      document.getElementById("detailedInstructions").value = "";
-      document.getElementById("backgroundContext").value = "";
-      document.getElementById("outputFormat").value = "";
-      document.getElementById("finalPrompt").value = "";
-      document.getElementById("copySuccess").style.display = "none";
     }
     
-    // Save the custom template
-    function saveCustomTemplate() {
-      const template = {
-        role: document.getElementById("roleContext").value.trim(),
-        task: document.getElementById("objective").value.trim(),
-        instructions: document.getElementById("detailedInstructions").value.trim(),
-        background: document.getElementById("backgroundContext").value.trim(),
-        format: document.getElementById("outputFormat").value.trim()
-      };
-      
-      if (template.role || template.task || template.instructions || template.background || template.format) {
-        localStorage.setItem('customPromptTemplate', JSON.stringify(template));
-      }
+    // Edit prompt
+    function editPrompt(id) {
+        const prompt = userPrompts.find(p => p.id === id);
+        if (!prompt) return;
+        
+        document.getElementById('prompt-title').value = prompt.title;
+        document.getElementById('prompt-content').value = prompt.content;
+        document.getElementById('prompt-category').value = prompt.category;
+        
+        // Change save button to update mode
+        const saveButton = document.getElementById('save-prompt-btn');
+        saveButton.innerHTML = '<i class="fas fa-save"></i> Update Prompt';
+        saveButton.dataset.editId = id;
     }
+    
+    // Delete prompt
+    function deletePrompt(id) {
+        if (confirm('Are you sure you want to delete this prompt?')) {
+            userPrompts = userPrompts.filter(p => p.id !== id);
+            savePrompts();
+            renderPrompts(document.getElementById('category-select').value);
+        }
+    }
+    
+    // Save prompts to storage (using storage wrapper)
+    function savePrompts() {
+        storageHandler.setItem('userPrompts', JSON.stringify(userPrompts));
+    }
+    
+    // Save categories to storage (using storage wrapper)
+    function saveCategories() {
+        storageHandler.setItem('userCategories', JSON.stringify(userCategories));
+    }
+    
+    // Generate unique ID
+    function generateId() {
+        return 'prompt_' + Date.now() + Math.random().toString(36).substr(2, 9);
+    }
+    
+    // Add event listeners for prompt functionality
+    document.addEventListener('DOMContentLoaded', () => {
+        renderPrompts();
+        
+        // Since we're focusing only on writing prompts, we don't need category filtering
+    // We'll still render all prompts on page load
+        renderPrompts('writing');
+        
+        // Save new prompt
+        document.getElementById('save-prompt-btn').addEventListener('click', function() {
+            const title = document.getElementById('prompt-title').value.trim();
+            const content = document.getElementById('prompt-content').value.trim();
+            const category = document.getElementById('prompt-category').value;
+            
+            if (!title || !content) {
+                showPopup('Please fill in both title and content');
+                return;
+            }
+            
+            // Check if we're editing or adding
+            const editId = this.dataset.editId;
+            
+            if (editId) {
+                // Update existing prompt
+                const promptIndex = userPrompts.findIndex(p => p.id === editId);
+                if (promptIndex !== -1) {
+                    userPrompts[promptIndex].title = title;
+                    userPrompts[promptIndex].content = content;
+                    userPrompts[promptIndex].category = category;
+                }
+                
+                // Reset button
+                this.innerHTML = '<i class="fas fa-save"></i> Save Prompt';
+                delete this.dataset.editId;
+            } else {
+                // Add new prompt
+                userPrompts.push({
+                    id: generateId(),
+                    title,
+                    content,
+                    category,
+                    permanent: false
+                });
+            }
+            
+            // Save and render
+            savePrompts();
+            renderPrompts(document.getElementById('category-select').value);
+            
+            // Clear form
+            document.getElementById('prompt-title').value = '';
+            document.getElementById('prompt-content').value = '';
+            
+            showPopup('Prompt saved successfully!');
+        });
+        
+        // Add new category
+        document.getElementById('add-category-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            const newCategory = document.getElementById('new-category').value.trim().toLowerCase();
+            
+            if (!newCategory) {
+                showPopup('Please enter a category name');
+                return;
+            }
+            
+            if (userCategories.includes(newCategory)) {
+                showPopup('This category already exists');
+                return;
+            }
+            
+            userCategories.push(newCategory);
+            saveCategories();
+            initCategoryDropdown();
+            
+            document.getElementById('new-category').value = '';
+            showPopup('Category added successfully!');
+        });
+    });
 
     /************* ENHANCED SPEECH-TO-TEXT CONVERTER LOGIC *************/
     const startBtn = document.getElementById('start-btn');
@@ -1337,8 +1286,6 @@
     const historySearch = document.getElementById('history-search');
     const toggleThemeBtn = document.getElementById('toggle-theme-btn');
     const mainHeading = document.getElementById('main-heading');
-    const generateBtn = document.getElementById('generateBtn');
-    const clearBtn = document.getElementById('clearBtn');
 
     const languageSelect = document.getElementById('language-select');
     const interimCheckbox = document.getElementById('interim-checkbox');
@@ -1354,82 +1301,6 @@
     let useContinuous = continuousCheckbox.checked;
     let autoPunctuate = autoPunctuateCheckbox.checked;
     let darkMode = false;
-
-    // Add event listeners for prompt generator buttons
-    generateBtn.addEventListener('click', function() { generateAndCopyPrompt(true); });
-    clearBtn.addEventListener('click', clearAllFields);
-    
-    // Add Speech to Prompt functionality
-    document.getElementById('speech-to-prompt-btn').addEventListener('click', function() {
-        const transcribedText = output.textContent.trim();
-        if (!transcribedText) {
-            showPopup('No transcription text to convert');
-            return;
-        }
-        
-        // Simple parsing attempt
-        try {
-            // Extract potential role
-            let role = '';
-            if (transcribedText.toLowerCase().includes('as a') || transcribedText.toLowerCase().includes('as an')) {
-                const roleMatch = transcribedText.match(/as (a|an) ([^,\.]+)/i);
-                if (roleMatch && roleMatch[2]) {
-                    role = roleMatch[2].trim();
-                }
-            }
-            
-            // Extract potential task
-            let task = '';
-            if (transcribedText.toLowerCase().includes('i need') || 
-                transcribedText.toLowerCase().includes('i want') ||
-                transcribedText.toLowerCase().includes('please')) {
-                
-                const taskMatch = transcribedText.match(/(i need|i want|please) ([^\.]+)/i);
-                if (taskMatch && taskMatch[2]) {
-                    task = taskMatch[2].trim();
-                }
-            }
-            
-            // Fill in the form
-            if (role) document.getElementById('roleContext').value = role;
-            if (task) document.getElementById('objective').value = task;
-            
-            // Put the full text in the background/context
-            document.getElementById('backgroundContext').value = transcribedText;
-            
-            // Generate the prompt (without copying to clipboard)
-            generateAndCopyPrompt(false);
-            
-            // Show popup
-            showPopup('Speech converted to prompt!');
-            
-        } catch (error) {
-            console.error('Error parsing transcription:', error);
-            // Still put the text in the background context
-            document.getElementById('backgroundContext').value = transcribedText;
-            generateAndCopyPrompt(false);
-        }
-    });
-    
-    // Load saved custom template if exists
-    const savedCustomTemplate = localStorage.getItem('customPromptTemplate');
-    if (savedCustomTemplate) {
-        const template = JSON.parse(savedCustomTemplate);
-        document.getElementById("roleContext").value = template.role || '';
-        document.getElementById("objective").value = template.task || '';
-        document.getElementById("detailedInstructions").value = template.instructions || '';
-        document.getElementById("backgroundContext").value = template.background || '';
-        document.getElementById("outputFormat").value = template.format || '';
-    }
-    
-    // Load custom template into the dropdown
-    if (savedCustomTemplate) {
-        promptTemplates.custom = JSON.parse(savedCustomTemplate);
-    }
-
-    // Load history from local storage
-    let historyData = JSON.parse(localStorage.getItem('transcriptionHistory')) || [];
-    renderHistoryItems(historyData);
     
     // Toggle quick guide
     document.getElementById('toggle-guide').addEventListener('click', () => {
@@ -1461,11 +1332,6 @@
         if (e.ctrlKey && e.key === 's') {
             e.preventDefault();
             saveBtn.click();
-        }
-        // Ctrl+G to generate prompt
-        if (e.ctrlKey && e.key === 'g') {
-            e.preventDefault();
-            generateBtn.click();
         }
     });
 
@@ -1699,45 +1565,44 @@
         }
     });
 
-    function copyToClipboard(text, message) {
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(text).then(() => {
-                showPopup(message);
-            }).catch(err => {
-                console.error('Could not copy text: ', err);
-                showPopup('Failed to copy to clipboard.');
-            });
-        } else {
-            // Fallback method
-            const textarea = document.createElement('textarea');
-            textarea.value = text;
-            document.body.appendChild(textarea);
-            textarea.select();
-            try {
-                document.execCommand('copy');
-                showPopup(message);
-            } catch (err) {
-                console.error('Could not copy text: ', err);
-                showPopup('Failed to copy to clipboard.');
-            }
-            document.body.removeChild(textarea);
-        }
-    }
-
-    function showPopup(text) {
+    function showPopup(text, duration = 2000) {
         const popup = document.createElement('div');
         popup.classList.add('popup');
         popup.textContent = text;
         document.body.appendChild(popup);
+        
+        // For longer messages, adjust the width and add a close button
+        if (text.length > 50) {
+            popup.style.maxWidth = '80%';
+            popup.style.padding = '15px 30px';
+            
+            // Add close button for longer messages
+            const closeBtn = document.createElement('span');
+            closeBtn.innerHTML = '&times;';
+            closeBtn.style.position = 'absolute';
+            closeBtn.style.right = '10px';
+            closeBtn.style.top = '5px';
+            closeBtn.style.fontSize = '20px';
+            closeBtn.style.cursor = 'pointer';
+            closeBtn.onclick = () => document.body.removeChild(popup);
+            popup.appendChild(closeBtn);
+        }
+        
         setTimeout(() => {
-            document.body.removeChild(popup);
-        }, 2000);
+            if (document.body.contains(popup)) {
+                document.body.removeChild(popup);
+            }
+        }, duration);
     }
+
+    // Load history from storage (using storage wrapper)
+    let historyData = JSON.parse(storageHandler.getItem('transcriptionHistory')) || [];
+    renderHistoryItems(historyData);
 
     function addHistoryItem(text) {
         if (!text) return;
         historyData.push(text);
-        localStorage.setItem('transcriptionHistory', JSON.stringify(historyData));
+        storageHandler.setItem('transcriptionHistory', JSON.stringify(historyData));
         renderHistoryItems(historyData);
     }
 
@@ -1772,7 +1637,7 @@
             deleteButton.style.backgroundColor = 'transparent';
             deleteButton.addEventListener('click', () => {
                 historyData.splice(index, 1);
-                localStorage.setItem('transcriptionHistory', JSON.stringify(historyData));
+                storageHandler.setItem('transcriptionHistory', JSON.stringify(historyData));
                 renderHistoryItems(historyData);
             });
 
@@ -1789,10 +1654,35 @@
         });
     }
 
+    function copyToClipboard(text, message) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(() => {
+                showPopup(message);
+            }).catch(err => {
+                console.error('Could not copy text: ', err);
+                showPopup('Failed to copy to clipboard.');
+            });
+        } else {
+            // Fallback method
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showPopup(message);
+            } catch (err) {
+                console.error('Could not copy text: ', err);
+                showPopup('Failed to copy to clipboard.');
+            }
+            document.body.removeChild(textarea);
+        }
+    }
+
     clearHistoryBtn.addEventListener('click', () => {
         if (confirm('Are you sure you want to clear all history items?')) {
             historyData = [];
-            localStorage.setItem('transcriptionHistory', JSON.stringify(historyData));
+            storageHandler.setItem('transcriptionHistory', JSON.stringify(historyData));
             renderHistoryItems(historyData);
             showPopup('History cleared');
         }
