@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/> 
-    <title>Prompt & Speech Assistant</title>
+    <title>Prompt and Speech Assistant</title>
     <style>
         /* Professional styling improvements */
         body {
@@ -1022,7 +1022,7 @@
         }
     ];
     
-        // Initialize user's prompts with defaults (using storage wrapper)
+    // Initialize user's prompts with defaults (using storage wrapper)
     let userPrompts = JSON.parse(storageHandler.getItem('userPrompts')) || [...defaultPrompts];
     // For this version, we're focusing only on writing prompts
     let userCategories = ['writing'];
@@ -1033,33 +1033,39 @@
         const promptCategorySelect = document.getElementById('prompt-category');
         
         // Clear existing options (except the "All Prompts" option for the filter dropdown)
-        while (categorySelect.options.length > 1) {
+        while (categorySelect && categorySelect.options.length > 1) {
             categorySelect.remove(1);
         }
         
-        while (promptCategorySelect.options.length > 0) {
+        while (promptCategorySelect && promptCategorySelect.options.length > 0) {
             promptCategorySelect.remove(0);
         }
         
         // Add user categories to both dropdowns
         userCategories.forEach(category => {
             // Add to filter dropdown
-            const filterOption = document.createElement('option');
-            filterOption.value = category;
-            filterOption.textContent = category.charAt(0).toUpperCase() + category.slice(1);
-            categorySelect.appendChild(filterOption);
+            if (categorySelect) {
+                const filterOption = document.createElement('option');
+                filterOption.value = category;
+                filterOption.textContent = category.charAt(0).toUpperCase() + category.slice(1);
+                categorySelect.appendChild(filterOption);
+            }
             
             // Add to new prompt form dropdown
-            const formOption = document.createElement('option');
-            formOption.value = category;
-            formOption.textContent = category.charAt(0).toUpperCase() + category.slice(1);
-            promptCategorySelect.appendChild(formOption);
+            if (promptCategorySelect) {
+                const formOption = document.createElement('option');
+                formOption.value = category;
+                formOption.textContent = category.charAt(0).toUpperCase() + category.slice(1);
+                promptCategorySelect.appendChild(formOption);
+            }
         });
     }
     
     // Render prompts based on selected category
     function renderPrompts(category = 'all') {
         const promptList = document.getElementById('prompt-list');
+        if (!promptList) return;
+        
         promptList.innerHTML = '';
         
         const filteredPrompts = category === 'all' 
@@ -1155,14 +1161,20 @@
         const prompt = userPrompts.find(p => p.id === id);
         if (!prompt) return;
         
-        document.getElementById('prompt-title').value = prompt.title;
-        document.getElementById('prompt-content').value = prompt.content;
-        document.getElementById('prompt-category').value = prompt.category;
+        const titleInput = document.getElementById('prompt-title');
+        const contentInput = document.getElementById('prompt-content');
+        const categoryInput = document.getElementById('prompt-category');
+        
+        if (titleInput) titleInput.value = prompt.title;
+        if (contentInput) contentInput.value = prompt.content;
+        if (categoryInput) categoryInput.value = prompt.category;
         
         // Change save button to update mode
         const saveButton = document.getElementById('save-prompt-btn');
-        saveButton.innerHTML = '<i class="fas fa-save"></i> Update Prompt';
-        saveButton.dataset.editId = id;
+        if (saveButton) {
+            saveButton.innerHTML = '<i class="fas fa-save"></i> Update Prompt';
+            saveButton.dataset.editId = id;
+        }
     }
     
     // Delete prompt
@@ -1170,7 +1182,8 @@
         if (confirm('Are you sure you want to delete this prompt?')) {
             userPrompts = userPrompts.filter(p => p.id !== id);
             savePrompts();
-            renderPrompts(document.getElementById('category-select').value);
+            const categorySelect = document.getElementById('category-select');
+            renderPrompts(categorySelect ? categorySelect.value : 'writing');
         }
     }
     
@@ -1189,382 +1202,7 @@
         return 'prompt_' + Date.now() + Math.random().toString(36).substr(2, 9);
     }
     
-    // Add event listeners for prompt functionality
-    document.addEventListener('DOMContentLoaded', () => {
-        renderPrompts();
-        
-        // Since we're focusing only on writing prompts, we don't need category filtering
-    // We'll still render all prompts on page load
-        renderPrompts('writing');
-        
-        // Save new prompt
-        document.getElementById('save-prompt-btn').addEventListener('click', function() {
-            const title = document.getElementById('prompt-title').value.trim();
-            const content = document.getElementById('prompt-content').value.trim();
-            const category = document.getElementById('prompt-category').value;
-            
-            if (!title || !content) {
-                showPopup('Please fill in both title and content');
-                return;
-            }
-            
-            // Check if we're editing or adding
-            const editId = this.dataset.editId;
-            
-            if (editId) {
-                // Update existing prompt
-                const promptIndex = userPrompts.findIndex(p => p.id === editId);
-                if (promptIndex !== -1) {
-                    userPrompts[promptIndex].title = title;
-                    userPrompts[promptIndex].content = content;
-                    userPrompts[promptIndex].category = category;
-                }
-                
-                // Reset button
-                this.innerHTML = '<i class="fas fa-save"></i> Save Prompt';
-                delete this.dataset.editId;
-            } else {
-                // Add new prompt
-                userPrompts.push({
-                    id: generateId(),
-                    title,
-                    content,
-                    category,
-                    permanent: false
-                });
-            }
-            
-            // Save and render
-            savePrompts();
-            renderPrompts(document.getElementById('category-select').value);
-            
-            // Clear form
-            document.getElementById('prompt-title').value = '';
-            document.getElementById('prompt-content').value = '';
-            
-            showPopup('Prompt saved successfully!');
-        });
-        
-        // Add new category
-        document.getElementById('add-category-btn').addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            const newCategory = document.getElementById('new-category').value.trim().toLowerCase();
-            
-            if (!newCategory) {
-                showPopup('Please enter a category name');
-                return;
-            }
-            
-            if (userCategories.includes(newCategory)) {
-                showPopup('This category already exists');
-                return;
-            }
-            
-            userCategories.push(newCategory);
-            saveCategories();
-            initCategoryDropdown();
-            
-            document.getElementById('new-category').value = '';
-            showPopup('Category added successfully!');
-        });
-    });
-
-    /************* ENHANCED SPEECH-TO-TEXT CONVERTER LOGIC *************/
-    const startBtn = document.getElementById('start-btn');
-    const stopBtn = document.getElementById('stop-btn');
-    const pauseResumeBtn = document.getElementById('pause-resume-btn');
-    const saveBtn = document.getElementById('save-btn');
-    const pdfBtn = document.getElementById('pdf-btn');
-    const ttsBtn = document.getElementById('tts-btn');
-    const output = document.getElementById('output');
-    const timerDisplay = document.getElementById('timer');
-    const statusIndicator = document.getElementById('status-indicator');
-    const wordCountDisplay = document.getElementById('word-count');
-    const historyList = document.getElementById('history-list');
-    const clearHistoryBtn = document.getElementById('clear-history-btn');
-    const historySearch = document.getElementById('history-search');
-    const toggleThemeBtn = document.getElementById('toggle-theme-btn');
-    const mainHeading = document.getElementById('main-heading');
-
-    const languageSelect = document.getElementById('language-select');
-    const interimCheckbox = document.getElementById('interim-checkbox');
-    const continuousCheckbox = document.getElementById('continuous-checkbox');
-    const autoPunctuateCheckbox = document.getElementById('auto-punctuate');
-
-    let timerInterval;
-    let startTime;
-    let speechBuffer = '';
-    let isPaused = false;
-    let currentLanguage = languageSelect.value;
-    let useInterim = interimCheckbox.checked;
-    let useContinuous = continuousCheckbox.checked;
-    let autoPunctuate = autoPunctuateCheckbox.checked;
-    let darkMode = false;
-    
-    // Toggle quick guide
-    document.getElementById('toggle-guide').addEventListener('click', () => {
-        const guideContent = document.getElementById('guide-content');
-        guideContent.style.display = guideContent.style.display === 'none' ? 'block' : 'none';
-    });
-    
-    // Add keyboard shortcuts
-    document.addEventListener('keydown', function(e) {
-        // Ctrl+B to start/stop recording
-        if (e.ctrlKey && e.key === 'b') {
-            e.preventDefault();
-            if (stopBtn.disabled) {
-                startRecognition();
-            } else {
-                stopRecognition();
-            }
-        }
-        // Ctrl+P to pause/resume
-        if (e.ctrlKey && e.key === 'p') {
-            e.preventDefault();
-            if (isPaused) {
-                resumeRecognition();
-            } else {
-                pauseRecognition();
-            }
-        }
-        // Ctrl+S to save text
-        if (e.ctrlKey && e.key === 's') {
-            e.preventDefault();
-            saveBtn.click();
-        }
-    });
-
-    function startTimer() {
-        startTime = new Date();
-        timerInterval = setInterval(() => {
-            const elapsedTime = new Date(new Date() - startTime);
-            const hours = String(elapsedTime.getUTCHours()).padStart(2, '0');
-            const minutes = String(elapsedTime.getUTCMinutes()).padStart(2, '0');
-            const seconds = String(elapsedTime.getUTCSeconds()).padStart(2, '0');
-            timerDisplay.textContent = `${hours}:${minutes}:${seconds}`;
-        }, 1000);
-    }
-
-    function stopTimer() {
-        clearInterval(timerInterval);
-    }
-
-    function updateWordCount() {
-        const wordCount = speechBuffer.trim().split(/\s+/).filter(word => word).length;
-        wordCountDisplay.textContent = `Words: ${wordCount}`;
-    }
-    
-    function applyAutoPunctuation(text) {
-        if (!autoPunctuateCheckbox.checked) return text;
-        
-        // Basic sentence capitalization
-        text = text.replace(/(?:^|[.!?]\s+)([a-z])/g, (m, p1) => {
-            return m.replace(p1, p1.toUpperCase());
-        });
-        
-        // Add periods at natural pauses if missing
-        text = text.replace(/\b(okay|well|so|anyway|now|then|um|uh)\s+(?=[A-Z])/gi, (m) => {
-            return m.trim() + '. ';
-        });
-        
-        return text;
-    }
-
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    let recognition;
-
-    if (SpeechRecognition) {
-        recognition = new SpeechRecognition();
-        recognition.continuous = useContinuous;
-        recognition.interimResults = useInterim;
-        recognition.lang = currentLanguage;
-
-        recognition.onstart = function() {
-            statusIndicator.classList.add('active');
-            if (!isPaused) {
-                speechBuffer = output.textContent;
-            }
-            startTimer();
-        };
-
-        recognition.onresult = function(event) {
-            for (let i = event.resultIndex; i < event.results.length; ++i) {
-                let transcript = event.results[i][0].transcript;
-                
-                // Apply auto-punctuation if enabled
-                if (event.results[i].isFinal) {
-                    if (autoPunctuateCheckbox.checked) {
-                        transcript = applyAutoPunctuation(transcript);
-                    } else {
-                        transcript = transcript.replace(/\./g, '');
-                    }
-                    
-                    speechBuffer += transcript + ' ';
-                    output.textContent = speechBuffer;
-                    updateWordCount();
-                    
-                    // Auto-scroll to bottom
-                    output.scrollTop = output.scrollHeight;
-                } else if (useInterim) {
-                    let interimText = speechBuffer + transcript;
-                    output.textContent = interimText;
-                }
-            }
-
-            // Voice commands
-            const command = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
-            
-            if (command === 'start' || command === 'begin recording') {
-                startRecognition();
-            } else if (command === 'stop' || command === 'end recording') {
-                stopRecognition();
-            } else if (command === 'pause') {
-                pauseRecognition();
-            } else if (command === 'resume') {
-                resumeRecognition();
-            } else if (command === 'save') {
-                saveBtn.click();
-            } else if (command === 'clear') {
-                output.textContent = '';
-                speechBuffer = '';
-                updateWordCount();
-            }
-        };
-
-        recognition.onerror = function(event) {
-            console.error('Error occurred in recognition:', event.error);
-            // If browser doesn't support the API, show a message
-            if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
-                output.textContent = "Microphone access denied or Speech Recognition not available in this browser. For full functionality, try Chrome, Edge, or Safari.";
-            }
-        };
-
-        recognition.onend = function() {
-            if (!stopBtn.disabled && !isPaused) {
-                if (useContinuous) {
-                    recognition.start();
-                }
-            } else {
-                stopTimer();
-                
-                // Try to copy to clipboard
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                    navigator.clipboard.writeText(output.innerText)
-                        .then(() => showPopup('Text copied to clipboard!'))
-                        .catch(err => console.error('Could not copy text: ', err));
-                }
-                
-                addHistoryItem(speechBuffer.trim());
-            }
-            statusIndicator.classList.remove('active');
-        };
-    } else {
-        console.error('Web Speech API is not supported in this browser.');
-        output.textContent = "Speech Recognition is not supported in this browser. For full functionality, try Chrome, Edge, or Safari.";
-    }
-
-    function startRecognition() {
-        if (!recognition) {
-            output.textContent = "Speech Recognition is not supported in this browser. For full functionality, try Chrome, Edge, or Safari.";
-            return;
-        }
-        stopBtn.disabled = false;
-        if (!isPaused) {
-            output.textContent = '';
-            speechBuffer = '';
-        }
-        recognition.lang = currentLanguage;
-        recognition.interimResults = useInterim;
-        recognition.continuous = useContinuous;
-        try {
-            recognition.start();
-            pauseResumeBtn.innerHTML = '<i class="fas fa-pause"></i> Pause';
-        } catch (error) {
-            console.error('Error starting recognition:', error);
-            output.textContent = "Error starting Speech Recognition. Make sure you've granted microphone permissions.";
-        }
-    }
-
-    function stopRecognition() {
-        if (!recognition) return;
-        stopBtn.disabled = true;
-        isPaused = false;
-        recognition.stop();
-    }
-
-    function pauseRecognition() {
-        if (!recognition) return;
-        recognition.stop();
-        isPaused = true;
-        pauseResumeBtn.innerHTML = '<i class="fas fa-play"></i> Resume';
-        statusIndicator.classList.remove('active');
-    }
-
-    function resumeRecognition() {
-        if (!recognition) return;
-        recognition.start();
-        isPaused = false;
-        pauseResumeBtn.innerHTML = '<i class="fas fa-pause"></i> Pause';
-        statusIndicator.classList.add('active');
-    }
-
-    startBtn.addEventListener('click', startRecognition);
-    stopBtn.addEventListener('click', stopRecognition);
-
-    pauseResumeBtn.addEventListener('click', () => {
-        if (isPaused) {
-            resumeRecognition();
-        } else {
-            pauseRecognition();
-        }
-    });
-
-    saveBtn.addEventListener('click', () => {
-        const blob = new Blob([output.innerText], { type: 'text/plain' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = 'transcription.txt';
-        link.click();
-        showPopup('Saved as text file');
-    });
-
-    pdfBtn.addEventListener('click', () => {
-        try {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            const text = output.innerText;
-            const lines = doc.splitTextToSize(text, 180);
-            doc.text(lines, 10, 10);
-            doc.save('transcription.pdf');
-            showPopup('Saved as PDF');
-        } catch (error) {
-            console.error('Error generating PDF:', error);
-            showPopup('Error generating PDF. Make sure the jsPDF library is loaded correctly.');
-        }
-    });
-
-    ttsBtn.addEventListener('click', () => {
-        if ('speechSynthesis' in window) {
-            const utterance = new SpeechSynthesisUtterance(output.innerText);
-            speechSynthesis.speak(utterance);
-            showPopup('Playing audio...');
-        } else {
-            showPopup('Text-to-speech is not supported in this browser.');
-        }
-    });
-
-    toggleThemeBtn.addEventListener('click', () => {
-        darkMode = !darkMode;
-        if (darkMode) {
-            document.body.classList.add('dark-mode');
-            toggleThemeBtn.innerHTML = '<i class="fas fa-sun"></i>';
-        } else {
-            document.body.classList.remove('dark-mode');
-            toggleThemeBtn.innerHTML = '<i class="fas fa-moon"></i>';
-        }
-    });
-
+    // Show popup message
     function showPopup(text, duration = 2000) {
         const popup = document.createElement('div');
         popup.classList.add('popup');
@@ -1594,64 +1232,381 @@
             }
         }, duration);
     }
+    
+    /************* ENHANCED SPEECH-TO-TEXT CONVERTER LOGIC *************/
+    const startBtn = document.getElementById('start-btn');
+    const stopBtn = document.getElementById('stop-btn');
+    const pauseResumeBtn = document.getElementById('pause-resume-btn');
+    const saveBtn = document.getElementById('save-btn');
+    const pdfBtn = document.getElementById('pdf-btn');
+    const ttsBtn = document.getElementById('tts-btn');
+    const output = document.getElementById('output');
+    const timerDisplay = document.getElementById('timer');
+    const statusIndicator = document.getElementById('status-indicator');
+    const wordCountDisplay = document.getElementById('word-count');
+    const historyList = document.getElementById('history-list');
+    const clearHistoryBtn = document.getElementById('clear-history-btn');
+    const historySearch = document.getElementById('history-search');
+    const toggleThemeBtn = document.getElementById('toggle-theme-btn');
+    const mainHeading = document.getElementById('main-heading');
 
-    // Load history from storage (using storage wrapper)
-    let historyData = JSON.parse(storageHandler.getItem('transcriptionHistory')) || [];
-    renderHistoryItems(historyData);
+    const languageSelect = document.getElementById('language-select');
+    const interimCheckbox = document.getElementById('interim-checkbox');
+    const continuousCheckbox = document.getElementById('continuous-checkbox');
+    const autoPunctuateCheckbox = document.getElementById('auto-punctuate');
 
-    function addHistoryItem(text) {
-        if (!text) return;
-        historyData.push(text);
-        storageHandler.setItem('transcriptionHistory', JSON.stringify(historyData));
-        renderHistoryItems(historyData);
+    let timerInterval;
+    let startTime;
+    let speechBuffer = '';
+    let isPaused = false;
+    let currentLanguage = languageSelect ? languageSelect.value : 'en-US';
+    let useInterim = interimCheckbox ? interimCheckbox.checked : false;
+    let useContinuous = continuousCheckbox ? continuousCheckbox.checked : true;
+    let autoPunctuate = autoPunctuateCheckbox ? autoPunctuateCheckbox.checked : true;
+    let darkMode = false;
+    
+    // Function to explicitly request microphone permissions
+    function requestMicrophonePermission() {
+        return navigator.mediaDevices.getUserMedia({ audio: true })
+            .then(stream => {
+                // Stop the stream immediately, we just needed the permission
+                stream.getTracks().forEach(track => track.stop());
+                return true;
+            })
+            .catch(error => {
+                console.error('Microphone permission denied:', error);
+                showPopup('Microphone access denied. Please allow microphone access in your browser settings.', 5000);
+                if (output) {
+                    output.textContent = "⚠️ Microphone permission denied. Click the camera/microphone icon in your address bar and allow access, then try again.";
+                }
+                return false;
+            });
+    }
+    
+    function startTimer() {
+        startTime = new Date();
+        timerInterval = setInterval(() => {
+            const elapsedTime = new Date(new Date() - startTime);
+            const hours = String(elapsedTime.getUTCHours()).padStart(2, '0');
+            const minutes = String(elapsedTime.getUTCMinutes()).padStart(2, '0');
+            const seconds = String(elapsedTime.getUTCSeconds()).padStart(2, '0');
+            if (timerDisplay) {
+                timerDisplay.textContent = `${hours}:${minutes}:${seconds}`;
+            }
+        }, 1000);
     }
 
-    function renderHistoryItems(data) {
-        historyList.innerHTML = '';
-        if (data.length === 0) {
-            historyList.innerHTML = '<li style="text-align:center; font-style:italic; background:none; box-shadow:none;">No history items yet</li>';
+    function stopTimer() {
+        clearInterval(timerInterval);
+    }
+
+    function updateWordCount() {
+        if (!wordCountDisplay) return;
+        
+        const wordCount = speechBuffer.trim().split(/\s+/).filter(word => word).length;
+        wordCountDisplay.textContent = `Words: ${wordCount}`;
+    }
+    
+    function applyAutoPunctuation(text) {
+        if (!autoPunctuateCheckbox || !autoPunctuateCheckbox.checked) return text;
+        
+        // Basic sentence capitalization
+        text = text.replace(/(?:^|[.!?]\s+)([a-z])/g, (m, p1) => {
+            return m.replace(p1, p1.toUpperCase());
+        });
+        
+        // Add periods at natural pauses if missing
+        text = text.replace(/\b(okay|well|so|anyway|now|then|um|uh)\s+(?=[A-Z])/gi, (m) => {
+            return m.trim() + '. ';
+        });
+        
+        return text;
+    }
+
+    // Check browser support for Speech Recognition API
+    function checkSpeechRecognitionSupport() {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+            showPopup("Speech Recognition is not supported in this browser. Please use Chrome, Edge, or Safari for full functionality.", 5000);
+            if (startBtn) {
+                startBtn.disabled = true;
+                startBtn.title = "Not supported in this browser";
+            }
+            if (output) {
+                output.textContent = "⚠️ Speech Recognition is not supported in this browser. For full functionality, try Chrome, Edge, or Safari.";
+            }
+            return false;
+        }
+        return true;
+    }
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let recognition;
+
+    if (SpeechRecognition) {
+        recognition = new SpeechRecognition();
+        recognition.continuous = useContinuous;
+        recognition.interimResults = useInterim;
+        recognition.lang = currentLanguage;
+
+        recognition.onstart = function() {
+            statusIndicator.classList.add('active');
+            statusIndicator.textContent = "● Recording";
+            
+            if (!isPaused && output) {
+                speechBuffer = output.textContent;
+            }
+            startTimer();
+            
+            // Add a visual indicator that microphone is active
+            if (startBtn) {
+                startBtn.style.backgroundColor = "#c0392b"; // Red color to indicate recording
+                startBtn.innerHTML = '<i class="fas fa-microphone"></i> Recording...';
+            }
+        };
+
+        recognition.onresult = function(event) {
+            if (!output) return;
+            
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+                let transcript = event.results[i][0].transcript;
+                
+                // Apply auto-punctuation if enabled
+                if (event.results[i].isFinal) {
+                    if (autoPunctuateCheckbox && autoPunctuateCheckbox.checked) {
+                        transcript = applyAutoPunctuation(transcript);
+                    }
+                    
+                    speechBuffer += transcript + ' ';
+                    output.textContent = speechBuffer;
+                    updateWordCount();
+                    
+                    // Auto-scroll to bottom
+                    output.scrollTop = output.scrollHeight;
+                } else if (useInterim) {
+                    let interimText = speechBuffer + transcript;
+                    output.textContent = interimText;
+                }
+            }
+
+            // Voice commands
+            const command = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
+            
+            if (command === 'start' || command === 'begin recording') {
+                startRecognition();
+            } else if (command === 'stop' || command === 'end recording') {
+                stopRecognition();
+            } else if (command === 'pause') {
+                pauseRecognition();
+            } else if (command === 'resume') {
+                resumeRecognition();
+            } else if (command === 'save') {
+                if (saveBtn) saveBtn.click();
+            } else if (command === 'clear') {
+                if (output) {
+                    output.textContent = '';
+                    speechBuffer = '';
+                    updateWordCount();
+                }
+            }
+        };
+
+        recognition.onerror = function(event) {
+            console.error('Speech recognition error:', event.error);
+            
+            let errorMessage = "";
+            
+            switch(event.error) {
+                case 'not-allowed':
+                case 'service-not-allowed':
+                    errorMessage = "Microphone access denied. Please allow microphone access in your browser settings.";
+                    break;
+                case 'aborted':
+                    errorMessage = "Speech recognition was aborted.";
+                    break;
+                case 'audio-capture':
+                    errorMessage = "No microphone was found or microphone is not working.";
+                    break;
+                case 'network':
+                    errorMessage = "Network error occurred. Please check your internet connection.";
+                    break;
+                case 'service-not-available':
+                    errorMessage = "Speech recognition service is not available. Please try again later.";
+                    break;
+                case 'bad-grammar':
+                    errorMessage = "Speech grammar error.";
+                    break;
+                case 'language-not-supported':
+                    errorMessage = "The selected language is not supported.";
+                    break;
+                default:
+                    errorMessage = "An error occurred with speech recognition: " + event.error;
+            }
+            
+            // Display error message to user
+            showPopup(errorMessage, 5000);
+            if (output) {
+                output.textContent += "\n\n⚠️ " + errorMessage;
+            }
+            
+            // Reset UI
+            if (statusIndicator) statusIndicator.classList.remove('active');
+            if (startBtn) {
+                startBtn.style.backgroundColor = "#3498db"; // Reset button color
+                startBtn.innerHTML = '<i class="fas fa-microphone"></i> Start';
+                startBtn.disabled = false;
+            }
+            if (stopBtn) stopBtn.disabled = true;
+        };
+
+        recognition.onend = function() {
+            console.log("Speech recognition ended");
+            
+            // Reset UI elements
+            if (startBtn) {
+                startBtn.style.backgroundColor = "#3498db"; // Reset button color
+                startBtn.innerHTML = '<i class="fas fa-microphone"></i> Start';
+                startBtn.disabled = false;
+            }
+            
+            if (stopBtn && !stopBtn.disabled && !isPaused) {
+                if (useContinuous) {
+                    // Try to restart recognition if it ended unexpectedly
+                    console.log("Attempting to restart continuous recognition...");
+                    setTimeout(() => {
+                        try {
+                            recognition.start();
+                            if (statusIndicator) statusIndicator.textContent = "● Recording (restarted)";
+                        } catch (error) {
+                            console.error('Failed to restart recognition:', error);
+                            if (statusIndicator) statusIndicator.classList.remove('active');
+                            if (stopBtn) stopBtn.disabled = true;
+                        }
+                    }, 1000);
+                }
+            } else {
+                stopTimer();
+                
+                // Try to copy to clipboard
+                if (navigator.clipboard && navigator.clipboard.writeText && output) {
+                    navigator.clipboard.writeText(output.innerText)
+                        .then(() => showPopup('Text copied to clipboard!'))
+                        .catch(err => console.error('Could not copy text: ', err));
+                }
+                
+                if (speechBuffer.trim()) {
+                    addHistoryItem(speechBuffer.trim());
+                }
+                
+                if (statusIndicator) statusIndicator.classList.remove('active');
+            }
+        };
+    } else {
+        // No SpeechRecognition support
+        console.error('Web Speech API is not supported in this browser.');
+        if (output) {
+            output.textContent = "Speech Recognition is not supported in this browser. For full functionality, try Chrome, Edge, or Safari.";
+        }
+    }
+
+    function startRecognition() {
+        if (!recognition) {
+            if (output) {
+                output.textContent = "Speech Recognition is not supported in this browser. For full functionality, try Chrome, Edge, or Safari.";
+            }
             return;
         }
+
+        // Show status to user
+        if (statusIndicator) {
+            statusIndicator.classList.add('active');
+            statusIndicator.textContent = "● Requesting microphone access...";
+        }
+        if (output) {
+            output.textContent = "Initializing speech recognition...";
+        }
         
-        data.forEach((item, index) => {
-            const historyItem = document.createElement('li');
-            historyItem.textContent = item.length > 100 ? item.substring(0, 100) + '...' : item;
+        requestMicrophonePermission().then(permissionGranted => {
+            if (!permissionGranted) {
+                if (statusIndicator) statusIndicator.classList.remove('active');
+                return;
+            }
             
-            const copyButton = document.createElement('button');
-            copyButton.innerHTML = '<i class="fas fa-copy"></i> Copy';
-            copyButton.addEventListener('click', () => {
-                copyToClipboard(item, 'History item copied!');
-            });
-
-            const useButton = document.createElement('button');
-            useButton.innerHTML = '<i class="fas fa-file-import"></i> Use';
-            useButton.addEventListener('click', () => {
-                output.textContent = item;
-                speechBuffer = item;
-                updateWordCount();
-                showPopup('History item loaded');
-            });
-
-            const deleteButton = document.createElement('button');
-            deleteButton.innerHTML = '<i class="fas fa-trash"></i>';
-            deleteButton.style.backgroundColor = 'transparent';
-            deleteButton.addEventListener('click', () => {
-                historyData.splice(index, 1);
-                storageHandler.setItem('transcriptionHistory', JSON.stringify(historyData));
-                renderHistoryItems(historyData);
-            });
-
-            historyItem.appendChild(document.createElement('br'));
-            const buttonContainer = document.createElement('div');
-            buttonContainer.style.display = 'flex';
-            buttonContainer.style.gap = '5px';
-            buttonContainer.style.marginTop = '8px';
-            buttonContainer.appendChild(copyButton);
-            buttonContainer.appendChild(useButton);
-            buttonContainer.appendChild(deleteButton);
-            historyItem.appendChild(buttonContainer);
-            historyList.appendChild(historyItem);
+            if (stopBtn) stopBtn.disabled = false;
+            if (startBtn) startBtn.disabled = true;
+            
+            if (!isPaused && output) {
+                output.textContent = '';
+                speechBuffer = '';
+            }
+            
+            // Configure recognition
+            recognition.lang = currentLanguage;
+            recognition.interimResults = useInterim;
+            recognition.continuous = useContinuous;
+            
+            try {
+                recognition.start();
+                if (pauseResumeBtn) pauseResumeBtn.innerHTML = '<i class="fas fa-pause"></i> Pause';
+                if (statusIndicator) statusIndicator.textContent = "● Recording";
+            } catch (error) {
+                console.error('Error starting recognition:', error);
+                if (output) {
+                    output.textContent = "Error starting Speech Recognition: " + error.message;
+                }
+                if (statusIndicator) statusIndicator.classList.remove('active');
+                if (stopBtn) stopBtn.disabled = true;
+                if (startBtn) startBtn.disabled = false;
+            }
         });
+    }
+
+    function stopRecognition() {
+        if (!recognition) return;
+        
+        if (stopBtn) stopBtn.disabled = true;
+        if (startBtn) startBtn.disabled = false;
+        isPaused = false;
+        
+        try {
+            recognition.stop();
+        } catch (error) {
+            console.error('Error stopping recognition:', error);
+        }
+        
+        if (startBtn) {
+            startBtn.style.backgroundColor = "#3498db"; // Reset button color
+            startBtn.innerHTML = '<i class="fas fa-microphone"></i> Start';
+        }
+        if (statusIndicator) statusIndicator.classList.remove('active');
+    }
+
+    function pauseRecognition() {
+        if (!recognition) return;
+        try {
+            recognition.stop();
+        } catch (error) {
+            console.error('Error pausing recognition:', error);
+        }
+        isPaused = true;
+        if (pauseResumeBtn) pauseResumeBtn.innerHTML = '<i class="fas fa-play"></i> Resume';
+        if (statusIndicator) statusIndicator.classList.remove('active');
+    }
+
+    function resumeRecognition() {
+        if (!recognition) return;
+        try {
+            recognition.start();
+        } catch (error) {
+            console.error('Error resuming recognition:', error);
+            showPopup("Error resuming speech recognition. Please try stopping and starting again.", 3000);
+        }
+        isPaused = false;
+        if (pauseResumeBtn) pauseResumeBtn.innerHTML = '<i class="fas fa-pause"></i> Pause';
+        if (statusIndicator) {
+            statusIndicator.classList.add('active');
+            statusIndicator.textContent = "● Recording";
+        }
     }
 
     function copyToClipboard(text, message) {
@@ -1679,36 +1634,289 @@
         }
     }
 
-    clearHistoryBtn.addEventListener('click', () => {
-        if (confirm('Are you sure you want to clear all history items?')) {
-            historyData = [];
-            storageHandler.setItem('transcriptionHistory', JSON.stringify(historyData));
-            renderHistoryItems(historyData);
-            showPopup('History cleared');
+    // Load history from storage (using storage wrapper)
+    let historyData = JSON.parse(storageHandler.getItem('transcriptionHistory')) || [];
+    renderHistoryItems(historyData);
+
+    function addHistoryItem(text) {
+        if (!text) return;
+        historyData.push(text);
+        storageHandler.setItem('transcriptionHistory', JSON.stringify(historyData));
+        renderHistoryItems(historyData);
+    }
+
+    function renderHistoryItems(data) {
+        if (!historyList) return;
+        
+        historyList.innerHTML = '';
+        if (data.length === 0) {
+            historyList.innerHTML = '<li style="text-align:center; font-style:italic; background:none; box-shadow:none;">No history items yet</li>';
+            return;
         }
-    });
+        
+        data.forEach((item, index) => {
+            const historyItem = document.createElement('li');
+            historyItem.textContent = item.length > 100 ? item.substring(0, 100) + '...' : item;
+            
+            const copyButton = document.createElement('button');
+            copyButton.innerHTML = '<i class="fas fa-copy"></i> Copy';
+            copyButton.addEventListener('click', () => {
+                copyToClipboard(item, 'History item copied!');
+            });
 
-    historySearch.addEventListener('input', () => {
-        const searchTerm = historySearch.value.toLowerCase();
-        const filtered = historyData.filter(item => item.toLowerCase().includes(searchTerm));
-        renderHistoryItems(filtered);
-    });
+            const useButton = document.createElement('button');
+            useButton.innerHTML = '<i class="fas fa-file-import"></i> Use';
+            useButton.addEventListener('click', () => {
+                if (output) {
+                    output.textContent = item;
+                    speechBuffer = item;
+                    updateWordCount();
+                    showPopup('History item loaded');
+                }
+            });
 
-    // Update settings on change
-    languageSelect.addEventListener('change', () => {
-        currentLanguage = languageSelect.value;
-    });
-    
-    interimCheckbox.addEventListener('change', () => {
-        useInterim = interimCheckbox.checked;
-    });
-    
-    continuousCheckbox.addEventListener('change', () => {
-        useContinuous = continuousCheckbox.checked;
-    });
-    
-    autoPunctuateCheckbox.addEventListener('change', () => {
-        autoPunctuate = autoPunctuateCheckbox.checked;
+            const deleteButton = document.createElement('button');
+            deleteButton.innerHTML = '<i class="fas fa-trash"></i>';
+            deleteButton.style.backgroundColor = 'transparent';
+            deleteButton.addEventListener('click', () => {
+                historyData.splice(index, 1);
+                storageHandler.setItem('transcriptionHistory', JSON.stringify(historyData));
+                renderHistoryItems(historyData);
+            });
+
+            historyItem.appendChild(document.createElement('br'));
+            const buttonContainer = document.createElement('div');
+            buttonContainer.style.display = 'flex';
+            buttonContainer.style.gap = '5px';
+            buttonContainer.style.marginTop = '8px';
+            buttonContainer.appendChild(copyButton);
+            buttonContainer.appendChild(useButton);
+            buttonContainer.appendChild(deleteButton);
+            historyItem.appendChild(buttonContainer);
+            historyList.appendChild(historyItem);
+        });
+    }
+
+    // Add event listeners once DOM is fully loaded
+    document.addEventListener('DOMContentLoaded', () => {
+        // First check if Speech Recognition is supported
+        checkSpeechRecognitionSupport();
+
+        // Initialize prompts
+        renderPrompts('writing');
+        
+        // Toggle quick guide
+        const toggleGuideElement = document.getElementById('toggle-guide');
+        if (toggleGuideElement) {
+            toggleGuideElement.addEventListener('click', () => {
+                const guideContent = document.getElementById('guide-content');
+                if (guideContent) {
+                    guideContent.style.display = guideContent.style.display === 'none' ? 'block' : 'none';
+                }
+            });
+        }
+        
+        // Add event listeners for prompt functionality
+        const savePromptBtn = document.getElementById('save-prompt-btn');
+        if (savePromptBtn) {
+            savePromptBtn.addEventListener('click', function() {
+                const titleInput = document.getElementById('prompt-title');
+                const contentInput = document.getElementById('prompt-content');
+                const categoryInput = document.getElementById('prompt-category');
+                
+                if (!titleInput || !contentInput) return;
+                
+                const title = titleInput.value.trim();
+                const content = contentInput.value.trim();
+                const category = categoryInput ? categoryInput.value : 'writing';
+                
+                if (!title || !content) {
+                    showPopup('Please fill in both title and content');
+                    return;
+                }
+                
+                // Check if we're editing or adding
+                const editId = this.dataset.editId;
+                
+                if (editId) {
+                    // Update existing prompt
+                    const promptIndex = userPrompts.findIndex(p => p.id === editId);
+                    if (promptIndex !== -1) {
+                        userPrompts[promptIndex].title = title;
+                        userPrompts[promptIndex].content = content;
+                        userPrompts[promptIndex].category = category;
+                    }
+                    
+                    // Reset button
+                    this.innerHTML = '<i class="fas fa-save"></i> Save Prompt';
+                    delete this.dataset.editId;
+                } else {
+                    // Add new prompt
+                    userPrompts.push({
+                        id: generateId(),
+                        title,
+                        content,
+                        category,
+                        permanent: false
+                    });
+                }
+                
+                // Save and render
+                savePrompts();
+                const categorySelect = document.getElementById('category-select');
+                renderPrompts(categorySelect ? categorySelect.value : 'writing');
+                
+                // Clear form
+                if (titleInput) titleInput.value = '';
+                if (contentInput) contentInput.value = '';
+                
+                showPopup('Prompt saved successfully!');
+            });
+        }
+        
+        // Add button events for speech recognition
+        if (startBtn) startBtn.addEventListener('click', startRecognition);
+        if (stopBtn) stopBtn.addEventListener('click', stopRecognition);
+
+        if (pauseResumeBtn) {
+            pauseResumeBtn.addEventListener('click', () => {
+                if (isPaused) {
+                    resumeRecognition();
+                } else {
+                    pauseRecognition();
+                }
+            });
+        }
+
+        if (saveBtn) {
+            saveBtn.addEventListener('click', () => {
+                if (!output) return;
+                
+                const blob = new Blob([output.innerText], { type: 'text/plain' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = 'transcription.txt';
+                link.click();
+                showPopup('Saved as text file');
+            });
+        }
+
+        if (pdfBtn) {
+            pdfBtn.addEventListener('click', () => {
+                if (!output) return;
+                
+                try {
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF();
+                    const text = output.innerText;
+                    const lines = doc.splitTextToSize(text, 180);
+                    doc.text(lines, 10, 10);
+                    doc.save('transcription.pdf');
+                    showPopup('Saved as PDF');
+                } catch (error) {
+                    console.error('Error generating PDF:', error);
+                    showPopup('Error generating PDF. Make sure the jsPDF library is loaded correctly.');
+                }
+            });
+        }
+
+        if (ttsBtn) {
+            ttsBtn.addEventListener('click', () => {
+                if (!output) return;
+                
+                if ('speechSynthesis' in window) {
+                    const utterance = new SpeechSynthesisUtterance(output.innerText);
+                    speechSynthesis.speak(utterance);
+                    showPopup('Playing audio...');
+                } else {
+                    showPopup('Text-to-speech is not supported in this browser.');
+                }
+            });
+        }
+
+        if (toggleThemeBtn) {
+            toggleThemeBtn.addEventListener('click', () => {
+                darkMode = !darkMode;
+                if (darkMode) {
+                    document.body.classList.add('dark-mode');
+                    toggleThemeBtn.innerHTML = '<i class="fas fa-sun"></i>';
+                } else {
+                    document.body.classList.remove('dark-mode');
+                    toggleThemeBtn.innerHTML = '<i class="fas fa-moon"></i>';
+                }
+            });
+        }
+        
+        if (clearHistoryBtn) {
+            clearHistoryBtn.addEventListener('click', () => {
+                if (confirm('Are you sure you want to clear all history items?')) {
+                    historyData = [];
+                    storageHandler.setItem('transcriptionHistory', JSON.stringify(historyData));
+                    renderHistoryItems(historyData);
+                    showPopup('History cleared');
+                }
+            });
+        }
+
+        if (historySearch) {
+            historySearch.addEventListener('input', () => {
+                const searchTerm = historySearch.value.toLowerCase();
+                const filtered = historyData.filter(item => item.toLowerCase().includes(searchTerm));
+                renderHistoryItems(filtered);
+            });
+        }
+
+        // Update settings on change
+        if (languageSelect) {
+            languageSelect.addEventListener('change', () => {
+                currentLanguage = languageSelect.value;
+            });
+        }
+        
+        if (interimCheckbox) {
+            interimCheckbox.addEventListener('change', () => {
+                useInterim = interimCheckbox.checked;
+            });
+        }
+        
+        if (continuousCheckbox) {
+            continuousCheckbox.addEventListener('change', () => {
+                useContinuous = continuousCheckbox.checked;
+            });
+        }
+        
+        if (autoPunctuateCheckbox) {
+            autoPunctuateCheckbox.addEventListener('change', () => {
+                autoPunctuate = autoPunctuateCheckbox.checked;
+            });
+        }
+        
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl+B to start/stop recording
+            if (e.ctrlKey && e.key === 'b') {
+                e.preventDefault();
+                if (stopBtn && stopBtn.disabled) {
+                    startRecognition();
+                } else {
+                    stopRecognition();
+                }
+            }
+            // Ctrl+P to pause/resume
+            if (e.ctrlKey && e.key === 'p') {
+                e.preventDefault();
+                if (isPaused) {
+                    resumeRecognition();
+                } else {
+                    pauseRecognition();
+                }
+            }
+            // Ctrl+S to save text
+            if (e.ctrlKey && e.key === 's') {
+                e.preventDefault();
+                if (saveBtn) saveBtn.click();
+            }
+        });
     });
     </script>
 </body>
